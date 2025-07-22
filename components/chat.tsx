@@ -6,12 +6,103 @@ import { ModelSelector } from "@/components/model-selector";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendIcon } from "lucide-react";
+import { SendIcon, WrenchIcon } from "lucide-react";
 import { useState } from "react";
 import { DEFAULT_MODEL } from "@/lib/constants";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+// Simple badge component
+function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+        className
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+// Tool call badge with dialog
+function ToolCallBadge({ toolName, part }: { 
+  toolName: string; 
+  part: { 
+    type: string; 
+    toolCallId?: string; 
+    state?: string; 
+    input?: any; 
+    output?: any; 
+  } 
+}) {
+
+  console.log(part);
+  const formatForDisplay = (value: any): string => {
+    if (typeof value === 'string') {
+      return value;
+    }
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch {
+      return String(value);
+    }
+  };
+
+  return (
+    <Dialog>
+      <div className="flex items-center gap-2 mb-2">
+        <Badge className="flex items-center gap-1">
+          <WrenchIcon className="h-3 w-3" />
+          {toolName}
+        </Badge>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            View Details
+          </Button>
+        </DialogTrigger>
+      </div>
+      <DialogContent className="w-full max-h-[80vh] overflow-auto">
+        <DialogHeader>
+          <DialogTitle>Tool Call: {toolName}</DialogTitle>
+          <DialogDescription>
+            Details for the {toolName} tool execution
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+
+          {part.output && (
+            <div>
+              <h4 className="font-semibold mb-2">Output:</h4>
+              <pre className="bg-muted p-3 rounded-md text-sm overflow-auto">
+                {formatForDisplay(part.output.output ? part.output.output : part.output.action)}
+              </pre>
+            </div>
+          )}
+          {part.state && (
+            <div>
+              <h4 className="font-semibold mb-2">State:</h4>
+              <Badge className={part.state === 'output-available' ? 'bg-green-500' : 'bg-yellow-500'}>
+                {part.state}
+              </Badge>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function ModelSelectorHandler({
   modelId,
@@ -44,6 +135,8 @@ export function Chat({ modelId = DEFAULT_MODEL }: { modelId: string }) {
     maxSteps: 3,
   });
 
+  console.log(messages);
+
   return (
     <div className="grid w-screen h-screen grid-rows-[1fr_auto_auto] max-w-[800px] m-auto">
       <div className="flex flex-col-reverse gap-8 p-8 overflow-y-auto">
@@ -57,9 +150,17 @@ export function Chat({ modelId = DEFAULT_MODEL }: { modelId: string }) {
             )}
           >
             {m.parts.map((part, i) => {
+              // Check if this is a tool call part (starts with "tool-")
+              if (part.type.startsWith("tool-")) {
+                const toolName = part.type.substring(5); // Remove "tool-" prefix
+                return <ToolCallBadge key={`${m.id}-${i}`} toolName={toolName} part={part} />;
+              }
+              
               switch (part.type) {
                 case "text":
                   return <div key={`${m.id}-${i}`}>{part.text}</div>;
+                default:
+                  return null;
               }
             })}
           </div>

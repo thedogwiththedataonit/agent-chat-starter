@@ -1,4 +1,4 @@
-export const DEFAULT_MODEL = "xai/grok-3";
+export const DEFAULT_MODEL = "moonshotai/kimi-k2";
 
 export const SUPPORTED_MODELS = [
   "amazon/nova-lite",
@@ -10,5 +10,12 @@ export const SUPPORTED_MODELS = [
   "mistral/ministral-3b",
   "openai/gpt-3.5-turbo",
   "openai/gpt-4o-mini",
+  "openai/gpt-4o",
+  "openai/gpt-4.1-mini",
+  "openai/gpt-4.1",
+  "openai/gpt-o1",
+  "openai/gpt-o3",
   "xai/grok-3",
+  "meta/llama-4-maverick",
+  "moonshotai/kimi-k2"
 ];
