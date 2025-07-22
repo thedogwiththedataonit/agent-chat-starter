@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { MarkdownContent } from "@/components/ui/markdown-content";
 
 // Simple badge component
 function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -39,17 +40,18 @@ function Badge({ children, className }: { children: React.ReactNode; className?:
 // Tool call badge with dialog
 function ToolCallBadge({ toolName, part }: { 
   toolName: string; 
-  part: { 
-    type: string; 
-    toolCallId?: string; 
-    state?: string; 
-    input?: any; 
-    output?: any; 
-  } 
+  part: {
+    type: string;
+    toolCallId?: string;
+    state?: string;
+    input?: unknown;
+    output?: unknown;
+    [key: string]: unknown;
+  };
 }) {
 
   console.log(part);
-  const formatForDisplay = (value: any): string => {
+  const formatForDisplay = (value: unknown): string => {
     if (typeof value === 'string') {
       return value;
     }
@@ -82,19 +84,31 @@ function ToolCallBadge({ toolName, part }: {
         </DialogHeader>
         <div className="space-y-4">
 
-          {part.output && (
-            <div>
-              <h4 className="font-semibold mb-2">Output:</h4>
+          {part.output ? (
+            <div className="flex flex-col gap-2">
+              {typeof part.output === 'object' && part.output !== null && 'path' in part.output && part.output.path ? (
+                <h4 className="font-semibold mb-2">Path: /{String(part.output.path)}</h4>
+              ) : (
+                <h4 className="font-semibold mb-2">Action: {typeof part.output === 'object' && part.output !== null && 'action' in part.output ? String(part.output.action) : 'Unknown'}</h4>
+              )}
               <pre className="bg-muted p-3 rounded-md text-sm overflow-auto">
-                {formatForDisplay(part.output.output ? part.output.output : part.output.action)}
+                {(() => {
+                  if (typeof part.output === 'object' && part.output !== null && 'output' in part.output) {
+                    return formatForDisplay(part.output.output);
+                  }
+                  if (typeof part.output === 'object' && part.output !== null && 'action' in part.output) {
+                    return formatForDisplay(part.output.action);
+                  }
+                  return formatForDisplay(part.output);
+                })()}
               </pre>
             </div>
-          )}
+          ) : null}
           {part.state && (
             <div>
               <h4 className="font-semibold mb-2">State:</h4>
               <Badge className={part.state === 'output-available' ? 'bg-green-500' : 'bg-yellow-500'}>
-                {part.state}
+                {String(part.state)}
               </Badge>
             </div>
           )}
@@ -132,7 +146,7 @@ export function Chat({ modelId = DEFAULT_MODEL }: { modelId: string }) {
   };
 
   const { messages, error, sendMessage, regenerate } = useChat({
-    maxSteps: 3,
+    maxSteps: 25,
   });
 
   console.log(messages);
@@ -144,7 +158,6 @@ export function Chat({ modelId = DEFAULT_MODEL }: { modelId: string }) {
           <div
             key={m.id}
             className={cn(
-              "whitespace-pre-wrap",
               m.role === "user" &&
                 "bg-muted/50 rounded-md p-3 ml-auto max-w-[80%]"
             )}
@@ -158,7 +171,14 @@ export function Chat({ modelId = DEFAULT_MODEL }: { modelId: string }) {
               
               switch (part.type) {
                 case "text":
-                  return <div key={`${m.id}-${i}`}>{part.text}</div>;
+                  return (
+                    <div key={`${m.id}-${i}`}>
+                      <MarkdownContent 
+                        id={`message-${m.id}-part-${i}`} 
+                        content={part.text} 
+                      />
+                    </div>
+                  );
                 default:
                   return null;
               }

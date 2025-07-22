@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: gateway(modelId),
-    stopWhen: stepCountIs(10),
+    stopWhen: stepCountIs(25),
     experimental_transform: smoothStream({
       delayInMs: 20,
       chunking: 'word',
@@ -73,9 +73,10 @@ export async function POST(req: Request) {
             console.log(`Reading file at '${path}'`);
             const output = fs.readFileSync(path, "utf-8");
             return { path, output };
-          } catch (error: any) {
-            console.error(`Error reading file at ${path}:`, error.message);
-            return { path, error: error.message };
+          } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error(`Error reading file at ${path}:`, errorMessage);
+            return { path, error: errorMessage };
           }
         },
       }),
