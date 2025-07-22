@@ -6,7 +6,7 @@ import { ModelSelector } from "@/components/model-selector";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendIcon, WrenchIcon } from "lucide-react";
+import { ArrowRightIcon, SendIcon, WrenchIcon } from "lucide-react";
 import { useState } from "react";
 import { DEFAULT_MODEL } from "@/lib/constants";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -64,18 +64,27 @@ function ToolCallBadge({ toolName, part }: {
 
   return (
     <Dialog>
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-2 justify-between">
+        <div className="flex items-center gap-1">
         <Badge className="flex items-center gap-1">
           <WrenchIcon className="h-3 w-3" />
           {toolName}
         </Badge>
+        {
+          part.output && typeof part.output === 'object' && part.output !== null && 'path' in part.output ? (
+            <p className="text-sm text-muted-foreground">
+              {String((part.output as { path?: string }).path)}
+            </p>
+          ) : null
+        }
+        </div>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm">
-            View Details
+          <Button variant="ghost" size="sm" className="flex items-center gap-1">
+            View Details <ArrowRightIcon className="h-3 w-3" />
           </Button>
         </DialogTrigger>
       </div>
-      <DialogContent className="w-full max-h-[80vh] overflow-auto">
+      <DialogContent className="w-[80vw] max-h-[80vh] overflow-auto">
         <DialogHeader>
           <DialogTitle>Tool Call: {toolName}</DialogTitle>
           <DialogDescription>
@@ -94,10 +103,10 @@ function ToolCallBadge({ toolName, part }: {
               <pre className="bg-muted p-3 rounded-md text-sm overflow-auto">
                 {(() => {
                   if (typeof part.output === 'object' && part.output !== null && 'output' in part.output) {
-                    return formatForDisplay(part.output.output);
+                    return formatForDisplay((part.output as { output: unknown }).output);
                   }
                   if (typeof part.output === 'object' && part.output !== null && 'action' in part.output) {
-                    return formatForDisplay(part.output.action);
+                    return formatForDisplay((part.output as { action: unknown }).action);
                   }
                   return formatForDisplay(part.output);
                 })()}

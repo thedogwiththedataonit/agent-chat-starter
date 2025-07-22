@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { marked } from "marked";
 import type * as React from "react";
-import { Suspense, isValidElement, memo, useMemo } from "react";
+import { isValidElement, memo, useMemo, useState, useEffect } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -21,30 +21,72 @@ const extractTextContent = (node: React.ReactNode): string => {
 	return "";
 };
 
+// Types for shiki tokens
+interface ShikiToken {
+	content: string;
+	htmlStyle?: string | Record<string, string>;
+}
+
+// Cache for shiki highlighting results
+const highlightCache = new Map<string, { tokens: ShikiToken[][] }>();
+
 interface HighlightedPreProps extends React.HTMLAttributes<HTMLPreElement> {
 	language: string;
 }
 
 const HighlightedPre = memo(
-	async ({ children, className, language, ...props }: HighlightedPreProps) => {
-		const { codeToTokens, bundledLanguages } = await import("shiki");
+	({ children, className, language, ...props }: HighlightedPreProps) => {
 		const code = extractTextContent(children);
+		const cacheKey = `${language}:${code}`;
+		const [tokens, setTokens] = useState<ShikiToken[][] | null>(
+			highlightCache.get(cacheKey)?.tokens || null
+		);
+		const [isLoading, setIsLoading] = useState(false);
 
-		if (!(language in bundledLanguages)) {
+		useEffect(() => {
+			if (tokens) return; // Already have tokens
+			if (isLoading) return; // Already loading
+
+			const loadTokens = async () => {
+				setIsLoading(true);
+				try {
+					const { codeToTokens, bundledLanguages } = await import("shiki");
+					
+					if (!(language in bundledLanguages)) {
+						// For unsupported languages, set empty tokens to trigger fallback
+						setTokens([]);
+						return;
+					}
+
+					const result = await codeToTokens(code, {
+						lang: language as keyof typeof bundledLanguages,
+						themes: {
+							light: "github-dark",
+							dark: "github-dark",
+						},
+					});
+
+					highlightCache.set(cacheKey, result);
+					setTokens(result.tokens);
+				} catch (error) {
+					console.warn('Syntax highlighting failed:', error);
+					setTokens([]);
+				} finally {
+					setIsLoading(false);
+				}
+			};
+
+			loadTokens();
+		}, [code, language, cacheKey, tokens, isLoading]);
+
+		// Show fallback while loading or if highlighting failed
+		if (!tokens || tokens.length === 0) {
 			return (
 				<pre {...props} className={cn(DEFAULT_PRE_BLOCK_CLASS, className)}>
 					<code className="whitespace-pre-wrap">{children}</code>
 				</pre>
 			);
 		}
-
-		const { tokens } = await codeToTokens(code, {
-			lang: language as keyof typeof bundledLanguages,
-			themes: {
-				light: "github-dark",
-				dark: "github-dark",
-			},
-		});
 
 		return (
 			<pre {...props} className={cn(DEFAULT_PRE_BLOCK_CLASS, className)}>
@@ -96,17 +138,9 @@ const CodeBlock = ({
 	...props
 }: CodeBlockProps) => {
 	return (
-		<Suspense
-			fallback={
-				<pre {...props} className={cn(DEFAULT_PRE_BLOCK_CLASS, className)}>
-					<code className="whitespace-pre-wrap">{children}</code>
-				</pre>
-			}
-		>
-			<HighlightedPre language={language} {...props}>
-				{children}
-			</HighlightedPre>
-		</Suspense>
+		<HighlightedPre language={language} className={className} {...props}>
+			{children}
+		</HighlightedPre>
 	);
 };
 
