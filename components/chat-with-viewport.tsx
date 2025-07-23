@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRightIcon, SendIcon, WrenchIcon } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { DEFAULT_MODEL } from "@/lib/constants";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -157,9 +157,13 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
   const [currentModelId, setCurrentModelId] = useState(modelId);
   const [isViewportVisible, setIsViewportVisible] = useState(false);
 
-  const handleModelIdChange = (newModelId: string) => {
+  const handleModelIdChange = useCallback((newModelId: string) => {
     setCurrentModelId(newModelId);
-  };
+  }, []);
+
+  const toggleViewportVisibility = useCallback(() => {
+    setIsViewportVisible(!isViewportVisible);
+  }, [isViewportVisible]);
 
   const { messages, error, sendMessage, regenerate } = useChat({
     maxSteps: 25,
@@ -167,28 +171,59 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
 
   console.log(messages);
 
-  // Extract the latest website from createWebsite or editWebsite tool calls
-  const latestWebsite = useMemo(() => {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      const message = messages[i];
+  // Create a stable hash of just the tool outputs to prevent rerenders during text streaming
+  const websiteToolHash = useMemo(() => {
+    const toolOutputs: string[] = [];
+    for (const message of messages) {
       for (const part of message.parts) {
         if ((part.type === "tool-createWebsite" || part.type === "tool-editWebsite") && 'output' in part && part.output) {
-          // The tool now returns just the JSX string directly
-          if (typeof part.output === 'string' && part.output.trim()) {
-            // Show viewport automatically when a website is created or edited
-            if (!isViewportVisible) {
-              setIsViewportVisible(true);
-            }
-            return {
-              jsx: part.output,
-              description: part.type === "tool-editWebsite" ? 'Edited Website' : 'Generated Website'
-            };
+          const partWithOutput = part as typeof part & { output: unknown };
+          if (typeof partWithOutput.output === 'string' && partWithOutput.output.trim()) {
+            toolOutputs.push(`${part.type}:${partWithOutput.output}`);
           }
         }
       }
     }
-    return null;
-  }, [messages, isViewportVisible]);
+    return toolOutputs.join('|');
+  }, [messages]);
+
+  // Extract the latest website from createWebsite or editWebsite tool calls
+  const websiteToolCalls = useMemo(() => {
+    const toolCalls: Array<{ type: string; output: string }> = [];
+    
+    for (const message of messages) {
+      for (const part of message.parts) {
+        if ((part.type === "tool-createWebsite" || part.type === "tool-editWebsite") && 'output' in part && part.output) {
+          // Type guard to ensure we have the right part type with output
+          const partWithOutput = part as typeof part & { output: unknown };
+          if (typeof partWithOutput.output === 'string' && partWithOutput.output.trim()) {
+            toolCalls.push({ type: part.type, output: partWithOutput.output });
+          }
+        }
+      }
+    }
+    
+    return toolCalls;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [websiteToolHash]);
+
+  // Extract the latest website from the stable tool calls array
+  const latestWebsite = useMemo(() => {
+    if (websiteToolCalls.length === 0) return null;
+    
+    const lastToolCall = websiteToolCalls[websiteToolCalls.length - 1];
+    const foundWebsite = {
+      jsx: lastToolCall.output,
+      description: lastToolCall.type === "tool-editWebsite" ? 'Edited Website' : 'Generated Website'
+    };
+    
+    // Show viewport automatically when a website is created or edited
+    if (foundWebsite && !isViewportVisible) {
+      setIsViewportVisible(true);
+    }
+    
+    return foundWebsite;
+  }, [websiteToolCalls, isViewportVisible]);
 
   if (!isViewportVisible || !latestWebsite) {
     // When viewport is not visible or no website exists, show only the chat with full width
@@ -300,7 +335,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
         {latestWebsite && (
           <WebsiteViewport
             jsx={latestWebsite.jsx}
-            onToggleVisibility={() => setIsViewportVisible(!isViewportVisible)}
+            onToggleVisibility={toggleViewportVisibility}
           />
         )}
       </div>
@@ -430,7 +465,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
         >
           <WebsiteViewport
             jsx={latestWebsite?.jsx}
-            onToggleVisibility={() => setIsViewportVisible(!isViewportVisible)}
+            onToggleVisibility={toggleViewportVisibility}
           />
         </ResizablePanel>
       </ResizablePanelGroup>

@@ -4,14 +4,14 @@ import { JsxRenderer } from "@/components/ui/jsx-renderer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Monitor, Smartphone, Code, Eye } from "lucide-react";
-import { useState } from "react";
+import { useState, memo } from "react";
 
 interface WebsiteViewportProps {
   jsx?: string;
   onToggleVisibility: () => void;
 }
 
-export function WebsiteViewport({ 
+export const WebsiteViewport = memo(function WebsiteViewport({ 
   jsx, 
   onToggleVisibility 
 }: WebsiteViewportProps) {
@@ -112,4 +112,4 @@ export function WebsiteViewport({
       </div>
     </div>
   );
-} 
+});
