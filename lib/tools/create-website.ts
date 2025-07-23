@@ -3,6 +3,7 @@ import { z } from "zod";
 import { generateText } from "ai";
 import { gateway } from "../gateway";
 import { DEFAULT_MODEL } from "@/lib/constants";
+import { formatExamplesForPrompt } from "./website-examples";
 
 export const createWebsite = tool({
   description: 'Create a complete website with JSX components. This will generate a full website layout with modern styling.',
@@ -15,13 +16,18 @@ export const createWebsite = tool({
         model: gateway(DEFAULT_MODEL),
         system: `You are an elite web developer creating cutting-edge, modern websites that exemplify contemporary design trends. You will create a complete website using JSX with Tailwind CSS styling.
 
+IMPORTANT: The JSX you generate represents the ENTIRE website. Make sure to include:
+- Proper color schemes (use specific color values, not just white/gray)
+- Complete layout structure with multiple sections
+- Modern design patterns as shown in the examples below
+
 MODERN DESIGN PRINCIPLES:
 - Embrace minimalism: Use plenty of whitespace, clean layouts, and focused content
 - Typography-first design: Use large, bold headings with excellent font hierarchy (use font-weight-900 for impact)
 - Subtle animations: Add smooth transitions, hover effects, and micro-interactions using Tailwind's animation classes
-- Modern color schemes: Use neutral backgrounds (white, gray-50) with bold accent colors, or sophisticated dark themes
+- Modern color schemes: Use gradients, vibrant colors, dark themes with proper contrast
 - Glassmorphism and subtle shadows: Use backdrop-blur, subtle drop shadows, and layered depth
-- Gradient accents: Incorporate subtle gradients for buttons, backgrounds, or text (bg-gradient-to-r, text-transparent bg-clip-text)
+- Gradient accents: Incorporate gradients for buttons, backgrounds, or text (bg-gradient-to-r, text-transparent bg-clip-text)
 - Smooth scrolling sections with intersection observer effects (use animation delays)
 
 ANIMATION & INTERACTION GUIDELINES:
@@ -47,7 +53,6 @@ TECHNICAL REQUIREMENTS:
 - Include ARIA labels for accessibility
 - Implement smooth scroll behavior
 - Use CSS Grid and Flexbox for modern layouts
-- NO absolute or fixed positioning except for navigation
 - Use relative and z-index for layering
 - Include custom animations using Tailwind's arbitrary values when needed
 
@@ -56,7 +61,16 @@ STYLING SPECIFICS:
 - Spacing: Consistent use of Tailwind's spacing scale (p-8, mt-16, gap-6)
 - Borders: Subtle (border-gray-200) or none, with rounded corners (rounded-lg, rounded-2xl)
 - Colors: Cohesive palette with primary, secondary, and neutral tones
-- Icons: Use Heroicons notation or elegant Unicode symbols (→, ✓, ★, ◆)
+- Icons: Use SVG icons with proper sizing and colors
+
+${formatExamplesForPrompt()}
+
+CRITICAL: 
+- Use specific color values (bg-blue-600, text-slate-900, from-cyan-400, etc.)
+- Include multiple sections (hero, features, stats, etc.)
+- Add proper hover states and animations
+- Use gradients and modern effects
+- Structure the entire website, not just a single component
 
 Return ONLY the complete JSX code wrapped in a single div element. Create a stunning, professional website that would impress on awwwards or dribbble.`,
         prompt: `Create a website for: ${description}`,

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { generateText } from "ai";
 import { gateway } from "../gateway";
 import { DEFAULT_MODEL } from "@/lib/constants";
+import { formatExamplesForPrompt } from "./website-examples";
 
 export const editWebsite = tool({
   description: 'Edit or modify an existing website JSX. Can change colors, content, layout, add sections, or make custom modifications.',
@@ -16,11 +17,17 @@ export const editWebsite = tool({
         model: gateway(DEFAULT_MODEL),
         system: `You are an elite web developer specializing in modern website modifications. You will modify existing JSX code while maintaining and enhancing its modern, professional aesthetic.
 
+IMPORTANT: The JSX represents the ENTIRE website. When modifying:
+- Maintain proper color schemes (use specific color values like bg-blue-600, not generic white/gray)
+- Keep the complete layout structure intact
+- Apply modern design patterns as shown in the examples below
+
 MODIFICATION PRINCIPLES:
 - Preserve the website's design language while implementing requested changes
 - Enhance with modern design patterns when appropriate
 - Maintain or improve animations and micro-interactions
 - Ensure modifications blend seamlessly with existing style
+- Use specific color values, never generic ones
 
 MODERN DESIGN STANDARDS TO MAINTAIN/ENHANCE:
 - Minimalism: Keep clean layouts with ample whitespace
@@ -42,15 +49,24 @@ TECHNICAL APPROACH:
 - Keep responsive design intact (mobile-first approach)
 - Preserve accessibility features
 - Maintain semantic HTML structure
-- NO absolute or fixed positioning (except existing navigation)
+- Use relative and z-index for layering
 - Keep or enhance existing animations and transitions
 
 SPECIFIC MODIFICATIONS:
 - Content changes: Update text while maintaining typography hierarchy
-- Color changes: Apply cohesively across all elements
+- Color changes: Apply cohesively across all elements with specific values
 - Layout changes: Respect existing grid/flex patterns
 - New features: Integrate seamlessly with current design system
 - Style updates: Enhance rather than replace existing patterns
+
+${formatExamplesForPrompt()}
+
+CRITICAL REMINDERS:
+- Always use specific color values (bg-blue-600, text-slate-900, from-cyan-400)
+- Maintain the complete website structure
+- Apply changes cohesively across all matching elements
+- Include hover states and animations
+- Use gradients and modern effects appropriately
 
 Return ONLY the modified JSX code wrapped in a single div element. Ensure the result maintains the professional, modern aesthetic while implementing the requested changes perfectly.`,
         prompt: `Current website JSX:
