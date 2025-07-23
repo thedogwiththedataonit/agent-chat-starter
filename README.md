@@ -1,5 +1,7 @@
 A powerful Next.js chatbot starter that leverages the new Vercel AI Gateway for provider-agnostic AI agent applications. This app serves as a comprehensive foundation for building agent chat applications that can seamlessly switch between any AI provider without code changes.
 
+**🚀 New Feature**: Now includes advanced **AI-powered website generation** - create complete, responsive websites with natural language descriptions and preview them in real-time!
+
 ## AI Gateway Integration
 
 This application demonstrates cutting-edge use of the [Vercel AI Gateway](https://vercel.com/docs/functions/ai-gateway) - a unified proxy layer that enables:
@@ -59,14 +61,55 @@ Get your AI chatbot running in **under 2 minutes** with zero configuration:
 
 ## Chat SDK and Tool Calling
 
-This application demonstrates the integration of the Vercel AI SDK to enable advanced chat functionalities, including tool calling within a chat UI. Tool calling allows the chatbot to interact with external APIs or custom functions based on user input, enhancing the conversational experience by providing dynamic and context-aware responses. 
+This application demonstrates the integration of the Vercel AI SDK to enable advanced chat functionalities, including tool calling within a chat UI. Tool calling allows the chatbot to interact with external APIs or custom functions based on user input, enhancing the conversational experience by providing dynamic and context-aware responses.
+
+The standout feature is the **AI website generator** that creates production-ready websites from simple descriptions. Users can generate complete landing pages, portfolios, and business sites with modern design patterns, then iterate on them through natural conversation. 
 
 ### Available Tools
 
-- **File Operations**: Read, edit, and list files in the project directory
+- **Website Generation**: Create complete, responsive websites with JSX and Tailwind CSS
+- **Website Editing**: Modify existing generated websites with natural language instructions
+- **Website Screenshot**: Capture screenshots of existing websites for design inspiration
 - **Web Search**: Search the web for up-to-date information using Exa (requires `EXA_API_KEY`)
+- **Real-time Preview**: View generated websites with responsive design preview (desktop/mobile)
 
 The chat UI showcases how these capabilities can be seamlessly integrated into a user-friendly interface, allowing users to interact with AI-powered tools in real-time.
+
+## AI-Powered Website Generation
+
+This application features a powerful website generation system that creates fully functional, responsive websites using natural language descriptions. The AI can generate complete websites with modern design patterns and best practices.
+
+### Website Generation Features
+
+- **Natural Language Input**: Simply describe the website you want (e.g., "Create a landing page for a coffee shop")
+- **Complete Website Generation**: Generates full single-page websites with multiple sections (header, hero, features, testimonials, footer)
+- **Modern Styling**: Uses Tailwind CSS for beautiful, responsive designs with proper mobile/desktop breakpoints
+- **Interactive Elements**: Includes hover effects, transitions, call-to-action buttons, and engaging UX
+- **Professional Templates**: Built-in examples including SaaS landing pages, agency portfolios, product showcases, and tech startup sites
+- **Visual Reference Support**: Can analyze screenshots of existing websites and recreate similar designs with your content
+
+### Website Editing Capabilities
+
+- **Real-time Modifications**: Edit generated websites with simple instructions like "change the color scheme to green" or "add a testimonials section"
+- **Content Updates**: Modify text, images, and layout elements
+- **Style Adjustments**: Change colors, fonts, spacing, and visual elements
+- **Section Management**: Add, remove, or rearrange website sections
+
+### Interactive Website Viewport
+
+- **Split-Screen Interface**: Chat with the AI on one side while previewing your website on the other
+- **Responsive Preview**: Toggle between desktop and mobile views to see how your site looks on different devices
+- **Code Inspection**: View the generated JSX code to understand the implementation
+- **Live Updates**: See changes instantly as you make modifications through chat
+
+### Example Use Cases
+
+- Generate landing pages for businesses or products
+- Create portfolio websites for designers or developers  
+- Build marketing sites with conversion-focused design
+- Prototype website concepts rapidly
+- Learn modern web design patterns and Tailwind CSS usage
+- Recreate existing website designs with custom content
 
 ## Authors
 
