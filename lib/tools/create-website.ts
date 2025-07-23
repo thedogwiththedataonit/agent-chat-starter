@@ -7,7 +7,7 @@ import { DEFAULT_MODEL } from "@/lib/constants";
 export const createWebsite = tool({
   description: 'Create a complete website with JSX components. This will generate a full website layout with modern styling.',
   inputSchema: z.object({
-    description: z.string().min(1).max(500).describe('Description of the website to create (e.g., "landing page for a coffee shop", "portfolio website for a designer")'),
+    description: z.string().min(1).describe('Description of the website to create (e.g., "landing page for a coffee shop", "portfolio website for a designer")'),
   }),
   execute: async ({ description }) => {
     try {
