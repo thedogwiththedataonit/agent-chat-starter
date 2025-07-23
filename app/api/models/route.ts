@@ -6,8 +6,6 @@ export async function GET() {
   const allModels = await gateway.getAvailableModels();
 
   return NextResponse.json({
-    models: allModels.models.filter((model) =>
-      SUPPORTED_MODELS.includes(model.id)
-    ),
+    models: allModels.models,
   });
 }
