@@ -1,4 +1,4 @@
-import { Chat } from "@/components/chat";
+import { ChatWithViewport } from "@/components/chat-with-viewport";
 
 export default async function Page({
   searchParams,
@@ -6,5 +6,5 @@ export default async function Page({
   searchParams: Promise<{ modelId: string }>;
 }) {
   const { modelId } = await searchParams;
-  return <Chat modelId={modelId} />;
+  return <ChatWithViewport modelId={modelId} />;
 }

@@ -260,28 +260,7 @@ export function Chat({ modelId = DEFAULT_MODEL }: { modelId: string }) {
         </Card>
       </form>
 
-      <footer className="px-8 pb-8 text-center">
-        <p className="text-sm text-muted-foreground">
-          The models in the list are a small subset of those available in the
-          Vercel AI Gateway.
-          <br />
-          See the{" "}
-          <Button
-            variant="link"
-            asChild
-            className="p-0 h-auto text-sm font-normal"
-          >
-            <a
-              href="https://ai-sdk.dev/model-library"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              model library
-            </a>
-          </Button>{" "}
-          for the full set.
-        </p>
-      </footer>
+
     </div>
   );
 }

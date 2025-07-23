@@ -1,8 +1,12 @@
-import { convertToModelMessages, smoothStream, stepCountIs, streamText, tool, type UIMessage } from "ai";
+import { convertToModelMessages, smoothStream, stepCountIs, streamText, type UIMessage } from "ai";
 import { DEFAULT_MODEL, SUPPORTED_MODELS } from "@/lib/constants";
 import { gateway } from "@/lib/gateway";
-import fs from "fs";
-import z from "zod/v4";
+import { webSearch } from "@/lib/tools/web-search";
+import { createWebsite } from "@/lib/tools/create-website";
+import { editWebsite } from "@/lib/tools/edit-website";
+import { websiteScreenshot } from "@/lib/tools/website-screenshot";
+//import fs from "fs";
+//import z from "zod";
 
 export const maxDuration = 60;
 
@@ -25,13 +29,26 @@ export async function POST(req: Request) {
     experimental_transform: smoothStream({
       delayInMs: 20,
       chunking: 'word',
-    }),  
-    system: "You are a coding agent. You will be working with js/ts projects. Your responses must be concise.",
+    }),
+    system: `You are a coding agent. Users can generate websites (jsx) and you can help them with that. Your responses must be concise.
+
+When a user asks to create a website "like [website name]" or similar to an existing site:
+1. First use webSearch to find the URL of that website
+2. Then use websiteScreenshot to take a screenshot of the site
+3. Pass the screenshot to the createWebsite tool
+
+This workflow allows you to recreate existing website designs accurately based on a url.
+    `,
     messages: convertToModelMessages(messages),
     onError: (e) => {
       console.error("Error while streaming.", e);
     },
     tools: {
+      webSearch,
+      createWebsite,
+      editWebsite,
+      websiteScreenshot,
+      /*
       list_files: tool({
         description:
           "List files and directories at a given path. If no path is provided, lists files in the current directory.",
@@ -80,7 +97,6 @@ export async function POST(req: Request) {
           }
         },
       }),
-      
       edit_file: tool({ 
         description:
           "Make edits to a text file or create a new file. Replaces 'old_str' with 'new_str' in the given file. 'old_str' and 'new_str' MUST be different from each other. If the file specified with path doesn't exist, it will be created.", 
@@ -114,6 +130,7 @@ export async function POST(req: Request) {
             } 
           }, 
       }), 
+      */
     },
   });
 

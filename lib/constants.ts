@@ -6,6 +6,7 @@ export const SUPPORTED_MODELS = [
   "anthropic/claude-3.5-haiku",
   "google/gemini-2.0-flash",
   "google/gemma2-9b-it",
+  "google/gemini-2.5-flash",
   "meta/llama-3.1-8b",
   "mistral/ministral-3b",
   "openai/gpt-3.5-turbo",

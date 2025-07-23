@@ -42,6 +42,9 @@ Get your AI chatbot running in **under 2 minutes** with zero configuration:
 
 ### Usage
 1. Install packages with `pnpm i` (or `npm i` or `yarn i`) and run the development server with `vc dev`
+1. (Optional) For web search functionality, add your EXA API key to your environment variables:
+   - Get your API key from [Exa](https://exa.ai/)
+   - Add `EXA_API_KEY=your_api_key_here` to your environment variables or `.env.local` file
 1. Open http://localhost:3000 to try the chatbot
 
 ### FAQ
@@ -56,7 +59,14 @@ Get your AI chatbot running in **under 2 minutes** with zero configuration:
 
 ## Chat SDK and Tool Calling
 
-This application demonstrates the integration of the Vercel AI SDK to enable advanced chat functionalities, including tool calling within a chat UI. Tool calling allows the chatbot to interact with external APIs or custom functions based on user input, enhancing the conversational experience by providing dynamic and context-aware responses. The chat UI showcases how these capabilities can be seamlessly integrated into a user-friendly interface, allowing users to interact with AI-powered tools in real-time.
+This application demonstrates the integration of the Vercel AI SDK to enable advanced chat functionalities, including tool calling within a chat UI. Tool calling allows the chatbot to interact with external APIs or custom functions based on user input, enhancing the conversational experience by providing dynamic and context-aware responses. 
+
+### Available Tools
+
+- **File Operations**: Read, edit, and list files in the project directory
+- **Web Search**: Search the web for up-to-date information using Exa (requires `EXA_API_KEY`)
+
+The chat UI showcases how these capabilities can be seamlessly integrated into a user-friendly interface, allowing users to interact with AI-powered tools in real-time.
 
 ## Authors
 
