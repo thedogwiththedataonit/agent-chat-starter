@@ -1,67 +1,4 @@
-const { useState, useEffect } = React;
-
-// SVG Icons
-const ArrowRightIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 12h14M12 5l7 7-7 7"/>
-  </svg>
-);
-
-const PlayIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="5,3 19,12 5,21"/>
-  </svg>
-);
-
-const ZapIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
-  </svg>
-);
-
-const ShieldIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-  </svg>
-);
-
-const GlobeIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <line x1="2" y1="12" x2="22" y2="12"/>
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-  </svg>
-);
-
-const ChevronDownIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="6,9 12,15 18,9"/>
-  </svg>
-);
-
-const MenuIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="3" y1="6" x2="21" y2="6"/>
-    <line x1="3" y1="12" x2="21" y2="12"/>
-    <line x1="3" y1="18" x2="21" y2="18"/>
-  </svg>
-);
-
-const XIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18"/>
-    <line x1="6" y1="6" x2="18" y2="18"/>
-  </svg>
-);
-
-// SaaS Landing Page
 const SaaSLanding = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       {/* Hero Section */}
@@ -73,10 +10,9 @@ const SaaSLanding = () => {
         </div>
 
         <div className={`relative z-10 max-w-6xl mx-auto px-6 text-center transform transition-all duration-1000 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          false === false ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-blue-200 text-sm mb-8 border border-white/20">
-            <ZapIcon />
             Now in Beta
           </div>
           
@@ -94,10 +30,8 @@ const SaaSLanding = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button className="group px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-blue-600/25 flex items-center gap-2">
               Start free trial
-              <ArrowRightIcon />
             </button>
             <button className="group px-8 py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-lg font-medium transition-all duration-300 border border-white/20 flex items-center gap-2">
-              <PlayIcon />
               Watch demo
             </button>
           </div>
@@ -105,7 +39,6 @@ const SaaSLanding = () => {
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronDownIcon />
         </div>
       </section>
 
@@ -123,9 +56,9 @@ const SaaSLanding = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: ZapIcon, title: "Lightning Fast", desc: "Optimized performance with sub-second response times" },
-              { icon: ShieldIcon, title: "Enterprise Security", desc: "Bank-level encryption and compliance standards" },
-              { icon: GlobeIcon, title: "Global Scale", desc: "Deploy worldwide with our distributed infrastructure" }
+              { icon: "ZapIcon", title: "Lightning Fast", desc: "Optimized performance with sub-second response times" },
+              { icon: "ShieldIcon", title: "Enterprise Security", desc: "Bank-level encryption and compliance standards" },
+              { icon: "GlobeIcon", title: "Global Scale", desc: "Deploy worldwide with our distributed infrastructure" }
             ].map((feature, index) => {
               const IconComponent = feature.icon;
               return (
@@ -149,27 +82,10 @@ const SaaSLanding = () => {
 
 // Agency Portfolio
 const AgencyPortfolio = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* Cursor Effect */}
-      <div 
-        className="fixed w-6 h-6 bg-white rounded-full pointer-events-none z-50 mix-blend-difference transition-transform duration-100"
-        style={{ 
-          left: mousePosition.x - 12, 
-          top: mousePosition.y - 12,
-          transform: 'scale(0.8)'
-        }}
-      />
+
 
       {/* Hero */}
       <section className="min-h-screen flex items-center justify-center relative">
@@ -250,13 +166,6 @@ const AgencyPortfolio = () => {
 
 // Product Showcase
 const ProductShowcase = () => {
-  const [activeFeature, setActiveFeature] = useState(0);
-
-  const features = [
-    { title: "Intuitive Design", desc: "Clean interface that users love" },
-    { title: "Real-time Sync", desc: "Updates across all devices instantly" },
-    { title: "Smart Analytics", desc: "Insights that drive better decisions" }
-  ];
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -328,15 +237,18 @@ const ProductShowcase = () => {
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              {features.map((feature, index) => (
+              {[
+                { title: "Intuitive Design", desc: "Clean interface that users love" },
+                { title: "Real-time Sync", desc: "Updates across all devices instantly" },
+                { title: "Smart Analytics", desc: "Insights that drive better decisions" }
+              ].map((feature, index) => (
                 <div
                   key={index}
                   className={`p-6 rounded-2xl cursor-pointer transition-all duration-300 ${
-                    activeFeature === index
+                    false === false
                       ? 'bg-blue-50 border-2 border-blue-200'
                       : 'bg-slate-50 hover:bg-slate-100 border-2 border-transparent'
                   }`}
-                  onClick={() => setActiveFeature(index)}
                 >
                   <h3 className="text-xl font-semibold text-slate-900 mb-2">{feature.title}</h3>
                   <p className="text-slate-600">{feature.desc}</p>
@@ -347,11 +259,11 @@ const ProductShowcase = () => {
             <div className="relative">
               <div className="bg-slate-100 rounded-3xl p-8 h-96 flex items-center justify-center">
                 <div className={`w-full h-full bg-gradient-to-br rounded-2xl flex items-center justify-center text-white text-2xl font-bold transition-all duration-500 ${
-                  activeFeature === 0 ? 'from-blue-500 to-blue-600' :
-                  activeFeature === 1 ? 'from-green-500 to-green-600' :
+                  false === false ? 'from-blue-500 to-blue-600' :
+                  false === false ? 'from-green-500 to-green-600' :
                   'from-purple-500 to-purple-600'
                 }`}>
-                  Feature {activeFeature + 1}
+                  Feature {0 + 1}
                 </div>
               </div>
             </div>
@@ -381,11 +293,7 @@ const ProductShowcase = () => {
 
 // Tech Startup
 const TechStartup = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -406,7 +314,7 @@ const TechStartup = () => {
         </div>
 
         <div className={`relative z-10 max-w-4xl mx-auto px-6 text-center transform transition-all duration-1000 ${
-          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          false === false ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 backdrop-blur-sm rounded-full text-cyan-300 text-sm mb-8 border border-cyan-500/30">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -429,7 +337,7 @@ const TechStartup = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <span className="relative flex items-center gap-2">
                 Start building
-                <ArrowRightIcon />
+                
               </span>
             </button>
             <button className="px-8 py-4 text-slate-300 hover:text-white border border-slate-600 hover:border-slate-500 rounded-lg font-medium transition-all duration-300">
@@ -501,24 +409,6 @@ const TechStartup = () => {
 
 // Main Navigation Component
 const ModernLandingExamples = () => {
-  const [activeExample, setActiveExample] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const examples = [
-    { name: "SaaS Landing", component: SaaSLanding },
-    { name: "Agency Portfolio", component: AgencyPortfolio },
-    { name: "Product Showcase", component: ProductShowcase },
-    { name: "Tech Startup", component: TechStartup }
-  ];
-
-  const CurrentExample = examples[activeExample].component;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -530,12 +420,16 @@ const ModernLandingExamples = () => {
               Design Examples
             </div>
             <div className="flex gap-2">
-              {examples.map((example, index) => (
+              {[
+                { name: "SaaS Landing", component: SaaSLanding },
+                { name: "Agency Portfolio", component: AgencyPortfolio },
+                { name: "Product Showcase", component: ProductShowcase },
+                { name: "Tech Startup", component: TechStartup }
+              ].map((example, index) => (
                 <button
                   key={index}
-                  onClick={() => setActiveExample(index)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    activeExample === index
+                    false === false
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
@@ -550,7 +444,7 @@ const ModernLandingExamples = () => {
 
       {/* Example Content */}
       <div className="pt-20">
-        <CurrentExample />
+        <SaaSLanding />
       </div>
     </div>
   );

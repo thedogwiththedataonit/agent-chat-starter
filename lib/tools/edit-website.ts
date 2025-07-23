@@ -7,7 +7,7 @@ import { DEFAULT_MODEL } from "@/lib/constants";
 export const editWebsite = tool({
   description: 'Edit or modify an existing website JSX. Can change colors, content, layout, add sections, or make custom modifications.',
   inputSchema: z.object({
-    modification: z.string().min(1).max(500).describe('Description of what to modify (e.g., "change the hero title to Welcome to My Store", "make the color scheme green", "add a testimonials section")'),
+    modification: z.string().min(1).describe('Description of what to modify (e.g., "change the hero title to Welcome to My Store", "make the color scheme green", "add a testimonials section")'),
     currentJsx: z.string().min(1).describe('The current JSX code of the website to modify'),
   }),
   execute: async ({ modification, currentJsx }) => {
@@ -26,6 +26,7 @@ Guidelines:
 - Keep existing sections that aren't being modified
 - If adding new sections, make them consistent with the existing style
 - DO NOT USE ANY ABSOLUTE OR FIXED POSITIONING
+- For any new images, use placeholder services like https://images.unsplash.com/photo-1234567890/800x600 or https://picsum.photos/800/600 that will reliably load. If you need specific images, use descriptive placeholder URLs that will fallback gracefully
 
 Return ONLY the modified JSX code wrapped in a single div element. Do not include any markdown formatting or explanations - just the pure JSX code.`,
         prompt: `Current website JSX:

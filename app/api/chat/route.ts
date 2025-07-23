@@ -1,4 +1,4 @@
-import { convertToModelMessages, smoothStream, stepCountIs, streamText, type UIMessage } from "ai";
+import { convertToModelMessages, smoothStream, stepCountIs, streamText, type UIMessage, generateText } from "ai";
 import { DEFAULT_MODEL, SUPPORTED_MODELS } from "@/lib/constants";
 import { gateway } from "@/lib/gateway";
 import { webSearch } from "@/lib/tools/web-search";
@@ -35,9 +35,9 @@ export async function POST(req: Request) {
 When a user asks to create a website "like [website name]" or similar to an existing site:
 1. First use webSearch to find the URL of that website
 2. Then use websiteScreenshot to take a screenshot of the site
-3. Pass the screenshot to the createWebsite tool
+3. Use createWebsite tool to generate the JSX
 
-This workflow allows you to recreate existing website designs accurately based on a url.
+The createWebsite tool will automatically use any reference images from screenshots in the conversation.
     `,
     messages: convertToModelMessages(messages),
     onError: (e) => {
@@ -45,7 +45,83 @@ This workflow allows you to recreate existing website designs accurately based o
     },
     tools: {
       webSearch,
-      createWebsite,
+      createWebsite: {
+        ...createWebsite,
+        execute: async ({ description }) => {
+          try {
+            // Find the most recent screenshot URL in the conversation
+            let referenceImageUrl: string | undefined;
+            
+                         // Look through messages for tool results containing screenshot URLs
+             for (let i = messages.length - 1; i >= 0; i--) {
+               const message = messages[i];
+               if (message.role === 'assistant' && 'toolInvocations' in message && Array.isArray(message.toolInvocations)) {
+                 for (const invocation of message.toolInvocations) {
+                   if (invocation.toolName === 'websiteScreenshot' && invocation.result?.screenshotUrl) {
+                     referenceImageUrl = invocation.result.screenshotUrl;
+                     break;
+                   }
+                 }
+                 if (referenceImageUrl) break;
+               }
+             }
+
+             // Create the content array for the LLM call
+             const contentParts: Array<{ type: 'text'; text: string } | { type: 'image'; image: URL }> = [
+               { 
+                 type: 'text' as const, 
+                 text: `Create a website for: ${description}${referenceImageUrl ? '\n\nUse the provided screenshot as visual reference while adapting the content to match the description provided.' : ''}`
+               }
+             ];
+
+             // Add image if we found a reference
+             if (referenceImageUrl) {
+               contentParts.push({
+                 type: 'image' as const,
+                 image: new URL(referenceImageUrl)
+               });
+             }
+
+            const { text: jsx } = await generateText({
+              model: gateway(modelId),
+              system: `You are a creative web developer. Generate a complete, modern, responsive website in JSX format based on the user's description${referenceImageUrl ? ' and the provided reference screenshot image' : ''}. 
+
+Guidelines:
+- Create a full single-page website with multiple sections (header, hero, features/services, testimonials, contact, footer)
+- Use modern Tailwind CSS classes for styling
+- Make it responsive with proper mobile/desktop breakpoints
+- Include realistic content that fits the description
+- Use semantic HTML elements
+- Add hover effects and transitions
+- Make the design visually appealing and professional
+- Include proper navigation and call-to-action buttons
+- Use appropriate icons (SVG) and placeholder images if needed
+- Ensure the color scheme is cohesive and modern
+- Make it engaging and interactive with proper UX
+- DO NOT USE ANY ABSOLUTE OR FIXED POSITIONING
+${referenceImageUrl ? `
+- IMPORTANT: Use the provided screenshot image as visual reference for layout, colors, typography, and overall design style
+- Recreate the visual hierarchy, spacing, and design elements shown in the screenshot
+- Match the color scheme and styling approach as closely as possible
+- Adapt the content to fit the user's description while maintaining the visual style from the screenshot
+- Analyze the screenshot carefully to understand the design patterns, component layouts, and visual elements` : ''}
+
+Return ONLY the JSX code wrapped in a single div element. Do not include any markdown formatting or explanations - just the pure JSX code.`,
+                             messages: [
+                 {
+                   role: 'user',
+                   content: contentParts
+                 }
+               ],
+            });
+
+            return jsx;
+          } catch (error) {
+            console.error('Error creating website:', error);
+            return { error: 'Failed to create website. Please try again with a different description.' };
+          }
+        }
+      },
       editWebsite,
       websiteScreenshot,
       /*

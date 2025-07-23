@@ -3,84 +3,53 @@ import { z } from "zod";
 import { generateText } from "ai";
 import { gateway } from "../gateway";
 import { DEFAULT_MODEL } from "@/lib/constants";
-
+import * as fs from "fs";
+import * as path from "path";
 
 export const createWebsite = tool({
-  description: 'Create a complete website with JSX components. This will generate a full website layout with modern styling. Can optionally use a reference URL to base the design on.',
+  description: 'Create a complete website with JSX components. This will generate a full website layout with modern styling.',
   inputSchema: z.object({
     description: z.string().min(1).max(500).describe('Description of the website to create (e.g., "landing page for a coffee shop", "portfolio website for a designer")'),
-    referenceUrl: z.string().url().optional().describe('Optional URL of a website to use as visual reference for the design'),
-    referenceTitle: z.string().optional().describe('Optional title of the reference website for context'),
-    referenceDescription: z.string().optional().describe('Optional description of the reference website for context'),
   }),
-  execute: async ({ description, referenceUrl, referenceTitle, referenceDescription }) => {
+  execute: async ({ description }) => {
     try {
-      // If a reference URL is provided, take a screenshot first
-      let screenshotUrl = '';
-      if (referenceUrl) {
-        try {
-          const { takeWebsiteScreenshot } = await import('./website-screenshot');
-          const screenshotData = await takeWebsiteScreenshot(referenceUrl);
-          if (screenshotData.status === 'success') {
-            screenshotUrl = screenshotData.data.screenshot.url;
-          }
-        } catch (error) {
-          console.error('Error taking screenshot for reference:', error);
-        }
-      }
+      // Read site examples to include in prompt
+      const examplesPath = path.join(process.cwd(), 'lib/tools/site-examples.tsx');
+      const siteExamples = fs.readFileSync(examplesPath, 'utf-8');
 
-      const messages = [
-        {
-          role: 'user' as const,
-          content: [
-            { 
-              type: 'text' as const, 
-              text: `Create a website for: ${description}${referenceTitle ? `
-Reference website title: ${referenceTitle}` : ''}${referenceDescription ? `
-Reference website description: ${referenceDescription}` : ''}
-
-${screenshotUrl ? 'Use the screenshot as visual reference while adapting the content to match the description provided.' : ''}`
-            },
-            ...(screenshotUrl ? [{
-              type: 'image' as const,
-              image: new URL(screenshotUrl)
-            }] : [])
-          ]
-        }
-      ];
-
-      const { text: jsx } = await generateText({
+      const { text: websiteJsx } = await generateText({
         model: gateway(DEFAULT_MODEL),
-        system: `You are a creative web developer. Generate a complete, modern, responsive website in JSX format based on the user's description${screenshotUrl ? ' and the provided reference screenshot image' : ''}. 
+        system: `You are a skilled web developer creating modern, responsive websites. You will be given a description and should create a complete website using JSX with Tailwind CSS styling.
 
 Guidelines:
-- Create a full single-page website with multiple sections (header, hero, features/services, testimonials, contact, footer)
-- Use modern Tailwind CSS classes for styling
-- Make it responsive with proper mobile/desktop breakpoints
-- Include realistic content that fits the description
-- Use semantic HTML elements
-- Add hover effects and transitions
-- Make the design visually appealing and professional
-- Include proper navigation and call-to-action buttons
-- Use appropriate icons (SVG) and placeholder images if needed
-- Ensure the color scheme is cohesive and modern
-- Make it engaging and interactive with proper UX
+- Create a complete, functional website based on the description
+- Use modern Tailwind CSS for styling with beautiful, responsive design
+- Include multiple sections (hero, features, testimonials, footer, etc.) as appropriate
+- Make the design visually appealing with proper spacing, colors, and typography
+- Use semantic HTML elements and proper accessibility practices
+- Include interactive elements and hover effects where appropriate
+- Make it fully responsive for mobile, tablet, and desktop
+- Use modern design patterns like gradients, shadows, and animations
 - DO NOT USE ANY ABSOLUTE OR FIXED POSITIONING
-${screenshotUrl ? `
-- IMPORTANT: Use the provided screenshot image as visual reference for layout, colors, typography, and overall design style
-- Recreate the visual hierarchy, spacing, and design elements shown in the screenshot
-- Match the color scheme and styling approach as closely as possible
-- Adapt the content to fit the user's description while maintaining the visual style from the screenshot
-- Analyze the screenshot carefully to understand the design patterns, component layouts, and visual elements` : ''}
+- Include appropriate icons and visual elements (you can use emoji or simple SVG-like elements)
+- For images, use placeholder services like https://images.unsplash.com/photo-1234567890/800x600 or https://picsum.photos/800/600 that will reliably load. If you need specific images, use descriptive placeholder URLs that will fallback gracefully
+- Keep the content relevant to the description provided
 
-Return ONLY the JSX code wrapped in a single div element. Do not include any markdown formatting or explanations - just the pure JSX code.`,
-        messages,
+Here are some high-quality website examples for inspiration:
+
+${siteExamples}
+
+Return ONLY the complete JSX code wrapped in a single div element. Do not include any markdown formatting or explanations - just the pure JSX code.`,
+        prompt: `Create a website for: ${description}`,
       });
 
-      return jsx;
+      return websiteJsx;
     } catch (error) {
       console.error('Error creating website:', error);
-      return { error: 'Failed to create website. Please try again with a different description.' };
+      return { 
+        error: 'Failed to create website. Please try with a different description.',
+        success: false 
+      };
     }
   },
 }); 
