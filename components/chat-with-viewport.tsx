@@ -446,6 +446,8 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                       variant="ghost"
                       className="h-8 w-8 ml-1"
                     >
+
+                      SEND
                       <SendIcon className="h-4 w-4" />
                     </Button>
                   </div>
