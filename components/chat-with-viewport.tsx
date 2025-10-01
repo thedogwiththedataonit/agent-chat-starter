@@ -214,7 +214,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
     const lastToolCall = websiteToolCalls[websiteToolCalls.length - 1];
     const foundWebsite = {
       jsx: lastToolCall.output,
-      description: lastToolCall.type === "tool-editWebsite" ? 'Edited Website' : 'Generated Website'
+      description: lastToolCall.type === "tool-editWebsite" ? "Edited Website" : "Generated Website"
     };
     
     // Show viewport automatically when a website is created or edited
