@@ -228,41 +228,90 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
   if (!isViewportVisible || !latestWebsite) {
     // When viewport is not visible or no website exists, show only the chat with full width
     return (
-      <div className="w-screen h-screen">
+      <div className="w-screen h-screen bg-gradient-to-b from-background via-background to-muted/20">
         <div className="flex flex-col h-full">
-          <div className="grid h-full grid-rows-[1fr_auto_auto] max-w-[800px] m-auto w-full">
-            <div className="flex flex-col-reverse gap-8 p-8 overflow-y-auto">
-              {messages.toReversed().map((m) => (
-                <div
-                  key={m.id}
-                  className={cn(
-                    m.role === "user" &&
-                      "bg-muted/50 rounded-md p-3 ml-auto max-w-[80%]"
-                  )}
-                >
-                  {m.parts.map((part, i) => {
-                    // Check if this is a tool call part (starts with "tool-")
-                    if (part.type.startsWith("tool-")) {
-                      const toolName = part.type.substring(5); // Remove "tool-" prefix
-                      return <ToolCallBadge key={`${m.id}-${i}`} toolName={toolName} part={part} />;
-                    }
-                    
-                    switch (part.type) {
-                      case "text":
-                        return (
-                          <div key={`${m.id}-${i}`}>
-                            <MarkdownContent 
-                              id={`message-${m.id}-part-${i}`} 
-                              content={part.text} 
-                            />
-                          </div>
-                        );
-                      default:
-                        return null;
-                    }
-                  })}
+          {/* Header */}
+          <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="max-w-[900px] m-auto px-8 py-4">
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  v0
+                </h1>
+                <ModelSelectorHandler
+                  modelId={modelId}
+                  onModelIdChange={handleModelIdChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid h-full grid-rows-[1fr_auto] max-w-[900px] m-auto w-full">
+            {/* Messages */}
+            <div className="flex flex-col-reverse gap-6 p-8 overflow-y-auto">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full gap-8 text-center">
+                  <div className="space-y-4">
+                    <h2 className="text-4xl font-bold bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+                      What can I help you build?
+                    </h2>
+                    <p className="text-muted-foreground text-lg max-w-[600px]">
+                      Describe your vision and I'll help bring it to life with code.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-[700px]">
+                    {[
+                      "Create a landing page for a SaaS product",
+                      "Build a pricing card component",
+                      "Design a modern dashboard layout",
+                      "Make a responsive navigation menu"
+                    ].map((example, i) => (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setInput(example);
+                        }}
+                        className="p-4 text-left rounded-lg border bg-card hover:bg-accent/50 transition-colors text-sm"
+                      >
+                        {example}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              ))}
+              ) : (
+                messages.toReversed().map((m) => (
+                  <div
+                    key={m.id}
+                    className={cn(
+                      "rounded-lg",
+                      m.role === "user" &&
+                        "bg-muted/50 border p-4 ml-auto max-w-[85%]",
+                      m.role === "assistant" && "space-y-3"
+                    )}
+                  >
+                    {m.parts.map((part, i) => {
+                      // Check if this is a tool call part (starts with "tool-")
+                      if (part.type.startsWith("tool-")) {
+                        const toolName = part.type.substring(5); // Remove "tool-" prefix
+                        return <ToolCallBadge key={`${m.id}-${i}`} toolName={toolName} part={part} />;
+                      }
+
+                      switch (part.type) {
+                        case "text":
+                          return (
+                            <div key={`${m.id}-${i}`} className="prose prose-sm dark:prose-invert max-w-none">
+                              <MarkdownContent
+                                id={`message-${m.id}-part-${i}`}
+                                content={part.text}
+                              />
+                            </div>
+                          );
+                        default:
+                          return null;
+                      }
+                    })}
+                  </div>
+                ))
+              )}
             </div>
 
             {error && (
@@ -284,28 +333,25 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
               </div>
             )}
 
+            {/* Input Form */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 sendMessage({ text: input }, { body: { modelId: currentModelId } });
                 setInput("");
               }}
-              className="flex justify-center px-8 pt-0 pb-4"
+              className="flex justify-center px-8 pt-4 pb-8"
             >
-              <Card className="w-full p-0">
-                <CardContent className="flex items-center gap-3 p-2">
-                  <ModelSelectorHandler
-                    modelId={modelId}
-                    onModelIdChange={handleModelIdChange}
-                  />
-                  <div className="flex flex-1 items-center">
+              <Card className="w-full shadow-lg border-2">
+                <CardContent className="flex items-center gap-2 p-3">
+                  <div className="flex flex-1 items-center gap-2">
                     <Input
                       name="prompt"
-                      placeholder="Type your message..."
+                      placeholder="Describe what you want to build..."
                       onChange={(e) => setInput(e.target.value)}
                       value={input}
                       autoFocus
-                      className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
                       onKeyDown={(e) => {
                         if (e.metaKey && e.key === "Enter") {
                           sendMessage(
@@ -319,8 +365,8 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                     <Button
                       type="submit"
                       size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 ml-1"
+                      className="h-9 w-9 shrink-0"
+                      disabled={!input.trim()}
                     >
                       <SendIcon className="h-4 w-4" />
                     </Button>
@@ -343,25 +389,43 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
   }
 
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen bg-gradient-to-b from-background via-background to-muted/20">
       <ResizablePanelGroup
         direction="horizontal"
         className="h-full w-full"
       >
-        <ResizablePanel 
-          defaultSize={30} 
-          minSize={15} 
+        <ResizablePanel
+          defaultSize={30}
+          minSize={15}
           maxSize={50}
           className="flex flex-col"
         >
-          <div className="grid h-full grid-rows-[1fr_auto_auto] max-w-[800px] m-auto w-full">
-            <div className="flex flex-col-reverse gap-8 p-8 overflow-y-auto">
+          {/* Header */}
+          <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="px-6 py-4">
+              <div className="flex items-center justify-between">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  v0
+                </h1>
+                <ModelSelectorHandler
+                  modelId={modelId}
+                  onModelIdChange={handleModelIdChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid h-full grid-rows-[1fr_auto] w-full">
+            {/* Messages */}
+            <div className="flex flex-col-reverse gap-6 p-6 overflow-y-auto">
               {messages.toReversed().map((m) => (
                 <div
                   key={m.id}
                   className={cn(
+                    "rounded-lg",
                     m.role === "user" &&
-                      "bg-muted/50 rounded-md p-3 ml-auto max-w-[80%]"
+                      "bg-muted/50 border p-3 ml-auto max-w-[85%]",
+                    m.role === "assistant" && "space-y-3"
                   )}
                 >
                   {m.parts.map((part, i) => {
@@ -370,14 +434,14 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                       const toolName = part.type.substring(5); // Remove "tool-" prefix
                       return <ToolCallBadge key={`${m.id}-${i}`} toolName={toolName} part={part} />;
                     }
-                    
+
                     switch (part.type) {
                       case "text":
                         return (
-                          <div key={`${m.id}-${i}`}>
-                            <MarkdownContent 
-                              id={`message-${m.id}-part-${i}`} 
-                              content={part.text} 
+                          <div key={`${m.id}-${i}`} className="prose prose-sm dark:prose-invert max-w-none">
+                            <MarkdownContent
+                              id={`message-${m.id}-part-${i}`}
+                              content={part.text}
                             />
                           </div>
                         );
@@ -390,7 +454,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
             </div>
 
             {error && (
-              <div className="px-8 pb-4">
+              <div className="px-6 pb-4">
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
@@ -408,28 +472,25 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
               </div>
             )}
 
+            {/* Input Form */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 sendMessage({ text: input }, { body: { modelId: currentModelId } });
                 setInput("");
               }}
-              className="flex justify-center px-8 pt-0 pb-4"
+              className="flex justify-center px-6 pt-4 pb-6"
             >
-              <Card className="w-full p-0">
-                <CardContent className="flex items-center gap-3 p-2">
-                  <ModelSelectorHandler
-                    modelId={modelId}
-                    onModelIdChange={handleModelIdChange}
-                  />
-                  <div className="flex flex-1 items-center">
+              <Card className="w-full shadow-lg border-2">
+                <CardContent className="flex items-center gap-2 p-3">
+                  <div className="flex flex-1 items-center gap-2">
                     <Input
                       name="prompt"
-                      placeholder="Type your message..."
+                      placeholder="Describe what you want to build..."
                       onChange={(e) => setInput(e.target.value)}
                       value={input}
                       autoFocus
-                      className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
                       onKeyDown={(e) => {
                         if (e.metaKey && e.key === "Enter") {
                           sendMessage(
@@ -443,8 +504,8 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                     <Button
                       type="submit"
                       size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 ml-1"
+                      className="h-9 w-9 shrink-0"
+                      disabled={!input.trim()}
                     >
                       <SendIcon className="h-4 w-4" />
                     </Button>
@@ -454,12 +515,12 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
             </form>
           </div>
         </ResizablePanel>
-        
+
         <ResizableHandle withHandle />
-        
-        <ResizablePanel 
-          defaultSize={80} 
-          minSize={15} 
+
+        <ResizablePanel
+          defaultSize={80}
+          minSize={15}
           maxSize={100}
           className="flex flex-col"
         >
