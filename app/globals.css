@@ -3,6 +3,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Dark mode helper: enable when .dark class is present on root element
+   Tailwind's dark variant is wired via the .dark class in this project. */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
