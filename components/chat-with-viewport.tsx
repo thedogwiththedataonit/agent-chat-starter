@@ -12,6 +12,7 @@ import { DEFAULT_MODEL } from "@/lib/constants";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Dialog,
   DialogContent,
@@ -298,6 +299,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                     modelId={modelId}
                     onModelIdChange={handleModelIdChange}
                   />
+                  <ThemeToggle />
                   <div className="flex flex-1 items-center">
                     <Input
                       name="prompt"
@@ -422,6 +424,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                     modelId={modelId}
                     onModelIdChange={handleModelIdChange}
                   />
+                  <ThemeToggle />
                   <div className="flex flex-1 items-center">
                     <Input
                       name="prompt"
