@@ -12,6 +12,7 @@ import { DEFAULT_MODEL } from "@/lib/constants";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Dialog,
   DialogContent,
@@ -316,6 +317,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                         }
                       }}
                     />
+                    <ThemeToggle />
                     <Button
                       type="submit"
                       size="icon"
@@ -440,6 +442,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                         }
                       }}
                     />
+                    <ThemeToggle />
                     <Button
                       type="submit"
                       size="icon"
