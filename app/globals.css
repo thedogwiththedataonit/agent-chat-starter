@@ -78,6 +78,11 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* Ensure dark mode uses the class-based strategy from next-themes */
+.dark {
+  /* nothing here; actual colors are controlled by CSS vars in :root/.dark overrides */
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
