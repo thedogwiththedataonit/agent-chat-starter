@@ -27,6 +27,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 // Simple badge component
 function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -316,6 +317,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                         }
                       }}
                     />
+                    <ThemeToggle />
                     <Button
                       type="submit"
                       size="icon"
@@ -440,6 +442,7 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
                         }
                       }}
                     />
+                    <ThemeToggle />
                     <Button
                       type="submit"
                       size="icon"
