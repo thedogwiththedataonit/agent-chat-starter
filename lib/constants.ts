@@ -8,8 +8,11 @@ export const SUPPORTED_MODELS = [
   "openai/gpt-4.1",
   "openai/gpt-o1",
   "openai/gpt-o3",
+  "openai/gpt-5-mini",
+  "openai/gpt-5",
   "anthropic/claude-3.5-sonnet",
   "anthropic/claude-3.7-sonnet",
+  'anthropic/claude-4.5-sonnet',
   //"anthropic/claude-4-sonnet",
   //"xai/grok-4",
   "moonshotai/kimi-k2"

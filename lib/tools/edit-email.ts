@@ -3,6 +3,7 @@ import { z } from "zod";
 import { generateText } from "ai";
 import { gateway } from "../gateway";
 import { DEFAULT_MODEL } from "@/lib/constants";
+import { formatEmailExamplesForPrompt } from "./email-examples";
 
 export const editEmail = tool({
   description: 'Edit or modify an existing email created with React Email. Can change colors, content, layout, add sections, or make custom modifications.',
@@ -50,6 +51,8 @@ EMAIL CLIENT SAFETY:
 - Keep inline styles for reliability
 - Preserve <Preview> text if present
 - Ensure images have full URLs and alt text
+
+${formatEmailExamplesForPrompt()}
 
 CRITICAL OUTPUT FORMAT:
 - Return ONLY the JSX code using React Email component syntax

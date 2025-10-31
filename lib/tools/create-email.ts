@@ -3,6 +3,7 @@ import { z } from "zod";
 import { generateText } from "ai";
 import { gateway } from "../gateway";
 import { DEFAULT_MODEL } from "@/lib/constants";
+import { formatEmailExamplesForPrompt } from "./email-examples";
 
 export const createEmail = tool({
   description: 'Create a complete email using React Email components. This will generate a professional email with modern styling.',
@@ -108,70 +109,21 @@ EMAIL CLIENT COMPATIBILITY:
 - Avoid: CSS Grid, Flexbox (limited support), absolute positioning
 - Stick to: Tables (Container/Section handle this), inline styles, simple layouts
 
+${formatEmailExamplesForPrompt()}
+
 CRITICAL OUTPUT FORMAT:
 - Return ONLY the JSX code using React Email component syntax
 - Start with <Html> and end with </Html>
-- Use proper JSX syntax with React Email components (Html, Head, Body, Container, etc.)
+- Use proper JSX syntax with React Email components
 - DO NOT wrap in markdown code fences (no \`\`\`jsx or \`\`\`)
 - DO NOT include any explanatory text before or after the JSX
 - DO NOT include import statements - just the JSX
-- The response should be valid JSX that can be transformed and rendered
+- DO NOT include TypeScript interfaces or export statements
+- The response should be ONLY the JSX element tree starting with <Html>
 
-EXAMPLE FORMAT (Real React Email Pattern):
-<Html>
-  <Head>
-    <Preview>Welcome to our platform - Get started today!</Preview>
-  </Head>
-  <Body style={{ backgroundColor: '#f6f9fc', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif' }}>
-    <Container maxWidth="600px" style={{ margin: '0 auto', padding: '20px 0' }}>
-      <Section style={{ backgroundColor: '#ffffff', borderRadius: '8px', padding: '40px' }}>
-        <Heading style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a', margin: '0 0 20px 0' }}>
-          Welcome to Our Platform!
-        </Heading>
-        <Text style={{ fontSize: '16px', lineHeight: '24px', color: '#666666', margin: '0 0 20px 0' }}>
-          We're excited to have you here. Get started by exploring our features.
-        </Text>
-        <Button 
-          href="https://example.com/get-started"
-          style={{
-            backgroundColor: '#0070f3',
-            color: '#ffffff',
-            padding: '12px 30px',
-            borderRadius: '6px',
-            textDecoration: 'none',
-            fontWeight: '600',
-            display: 'inline-block'
-          }}
-        >
-          Get Started
-        </Button>
-      </Section>
-      <Section style={{ padding: '20px 0' }}>
-        <Text style={{ fontSize: '14px', color: '#999999', textAlign: 'center' }}>
-          © 2024 Your Company. All rights reserved.
-        </Text>
-      </Section>
-    </Container>
-  </Body>
-</Html>
+FOLLOW THE EXAMPLES ABOVE - they show production-quality patterns from Stripe, Linear, Notion, Vercel, and AWS.
 
-MULTI-COLUMN EXAMPLE:
-<Section>
-  <Row>
-    <Column style={{ width: '50%', padding: '10px' }}>
-      <Img src="https://example.com/icon.png" alt="Feature" width="48" height="48" />
-      <Text style={{ fontSize: '16px', fontWeight: 'bold' }}>Feature One</Text>
-      <Text>Description of feature</Text>
-    </Column>
-    <Column style={{ width: '50%', padding: '10px' }}>
-      <Img src="https://example.com/icon2.png" alt="Feature" width="48" height="48" />
-      <Text style={{ fontSize: '16px', fontWeight: 'bold' }}>Feature Two</Text>
-      <Text>Description of feature</Text>
-    </Column>
-  </Row>
-</Section>
-
-Create a professional, beautiful email that renders perfectly across all email clients.`,
+Create a professional, modern email inspired by these real-world examples that renders perfectly across all email clients.`,
         messages: [
           {
             role: 'user',
