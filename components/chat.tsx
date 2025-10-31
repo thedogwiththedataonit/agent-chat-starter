@@ -154,9 +154,7 @@ export function Chat({ modelId = DEFAULT_MODEL }: { modelId: string }) {
     setCurrentModelId(newModelId);
   };
 
-  const { messages, error, sendMessage, regenerate } = useChat({
-    maxSteps: 25,
-  });
+  const { messages, error, sendMessage, regenerate } = useChat();
 
   console.log(messages);
 

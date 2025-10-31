@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Gateway Demo",
-  description: "A demo of the Vercel AI Gateway with the AI SDK by Vercel",
+  title: "AI Email Generator",
+  description: "Generate beautiful, responsive emails with AI using React Email and the Vercel AI Gateway",
 };
 
 export default function RootLayout({
@@ -24,7 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <SpeedInsights />
+      <Analytics />
       <body
+      
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}

@@ -6,132 +6,55 @@ import { ModelSelector } from "@/components/model-selector";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRightIcon, SendIcon, WrenchIcon } from "lucide-react";
+import { 
+  CopyIcon, 
+  RefreshCcwIcon, 
+  SendIcon, 
+  SparklesIcon 
+} from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
 import { DEFAULT_MODEL } from "@/lib/constants";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { MarkdownContent } from "@/components/ui/markdown-content";
-import { WebsiteViewport } from "@/components/website-viewport";
+import { EmailViewport } from "@/components/email-viewport";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { 
+  Conversation, 
+  ConversationContent,
+  ConversationEmptyState,
+  ConversationScrollButton
+} from "@/components/ai-elements/conversation";
+import { 
+  Message, 
+  MessageContent 
+} from "@/components/ai-elements/message";
+import { Response } from "@/components/ai-elements/response";
+import { 
+  Actions, 
+  Action 
+} from "@/components/ai-elements/actions";
+import {
+  Tool,
+  ToolHeader,
+  ToolContent,
+  ToolInput,
+  ToolOutput,
+} from "@/components/ai-elements/tool";
+import { Loader } from "@/components/ai-elements/loader";
+import type { ToolUIPart } from "ai";
 
-// Simple badge component
-function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-        "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        className
-      )}
-    >
-      {children}
-    </span>
-  );
-}
-
-// Tool call badge with dialog
-function ToolCallBadge({ toolName, part }: { 
-  toolName: string; 
-  part: {
-    type: string;
-    toolCallId?: string;
-    state?: string;
-    input?: unknown;
-    output?: unknown;
-    [key: string]: unknown;
-  };
-}) {
-
-  console.log(part);
-  const formatForDisplay = (value: unknown): string => {
-    if (typeof value === 'string') {
-      return value;
-    }
-    try {
-      return JSON.stringify(value, null, 2);
-    } catch {
-      return String(value);
-    }
-  };
-
-  return (
-    <Dialog>
-      <div className="flex items-center gap-2 mb-2 justify-between">
-        <div className="flex items-center gap-1">
-        <Badge className="flex items-center gap-1">
-          <WrenchIcon className="h-3 w-3" />
-          {toolName}
-        </Badge>
-        {
-          part.output && typeof part.output === 'object' && part.output !== null && 'path' in part.output ? (
-            <p className="text-sm text-muted-foreground">
-              {String((part.output as { path?: string }).path)}
-            </p>
-          ) : null
-        }
-        </div>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="sm" className="flex items-center gap-1">
-            View Details <ArrowRightIcon className="h-3 w-3" />
-          </Button>
-        </DialogTrigger>
-      </div>
-      <DialogContent className="w-[80vw] max-h-[80vh] overflow-auto">
-        <DialogHeader>
-          <DialogTitle>Tool Call: {toolName}</DialogTitle>
-          <DialogDescription>
-            Details for the {toolName} tool execution
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4">
-
-          {part.output ? (
-            <div className="flex flex-col gap-2">
-              {typeof part.output === 'object' && part.output !== null && 'path' in part.output && part.output.path ? (
-                <h4 className="font-semibold mb-2">Path: /{String(part.output.path)}</h4>
-              ) : (
-                <h4 className="font-semibold mb-2">Action: {typeof part.output === 'object' && part.output !== null && 'action' in part.output ? String(part.output.action) : 'Unknown'}</h4>
-              )}
-              <pre className="bg-muted p-3 rounded-md text-sm overflow-auto">
-                {(() => {
-                  if (typeof part.output === 'object' && part.output !== null && 'output' in part.output) {
-                    return formatForDisplay((part.output as { output: unknown }).output);
-                  }
-                  if (typeof part.output === 'object' && part.output !== null && 'action' in part.output) {
-                    return formatForDisplay((part.output as { action: unknown }).action);
-                  }
-                  return formatForDisplay(part.output);
-                })()}
-              </pre>
-            </div>
-          ) : null}
-          {part.state && (
-            <div>
-              <h4 className="font-semibold mb-2">State:</h4>
-              <Badge className={part.state === 'output-available' ? 'bg-green-500' : 'bg-yellow-500'}>
-                {String(part.state)}
-              </Badge>
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
+// Helper to copy text to clipboard
+const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (err) {
+    console.error('Failed to copy text:', err);
+  }
+};
 
 function ModelSelectorHandler({
   modelId,
@@ -165,18 +88,16 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
     setIsViewportVisible(!isViewportVisible);
   }, [isViewportVisible]);
 
-  const { messages, error, sendMessage, regenerate } = useChat({
-    maxSteps: 25,
+  const { messages, error, sendMessage, regenerate, status } = useChat({
+    experimental_throttle: 16, // Ultra-smooth streaming at ~60fps (16ms)
   });
 
-  console.log(messages);
-
   // Create a stable hash of just the tool outputs to prevent rerenders during text streaming
-  const websiteToolHash = useMemo(() => {
+  const emailToolHash = useMemo(() => {
     const toolOutputs: string[] = [];
     for (const message of messages) {
       for (const part of message.parts) {
-        if ((part.type === "tool-createWebsite" || part.type === "tool-editWebsite") && 'output' in part && part.output) {
+        if ((part.type === "tool-createEmail" || part.type === "tool-editEmail") && 'output' in part && part.output) {
           const partWithOutput = part as typeof part & { output: unknown };
           if (typeof partWithOutput.output === 'string' && partWithOutput.output.trim()) {
             toolOutputs.push(`${part.type}:${partWithOutput.output}`);
@@ -187,13 +108,13 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
     return toolOutputs.join('|');
   }, [messages]);
 
-  // Extract the latest website from createWebsite or editWebsite tool calls
-  const websiteToolCalls = useMemo(() => {
+  // Extract the latest email from createEmail or editEmail tool calls
+  const emailToolCalls = useMemo(() => {
     const toolCalls: Array<{ type: string; output: string }> = [];
     
     for (const message of messages) {
       for (const part of message.parts) {
-        if ((part.type === "tool-createWebsite" || part.type === "tool-editWebsite") && 'output' in part && part.output) {
+        if ((part.type === "tool-createEmail" || part.type === "tool-editEmail") && 'output' in part && part.output) {
           // Type guard to ensure we have the right part type with output
           const partWithOutput = part as typeof part & { output: unknown };
           if (typeof partWithOutput.output === 'string' && partWithOutput.output.trim()) {
@@ -205,65 +126,136 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
     
     return toolCalls;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [websiteToolHash]);
+  }, [emailToolHash]);
 
-  // Extract the latest website from the stable tool calls array
-  const latestWebsite = useMemo(() => {
-    if (websiteToolCalls.length === 0) return null;
+  // Extract the latest email from the stable tool calls array
+  const latestEmail = useMemo(() => {
+    console.log('Email tool calls count:', emailToolCalls.length);
+    console.log('Email tool calls:', emailToolCalls);
     
-    const lastToolCall = websiteToolCalls[websiteToolCalls.length - 1];
-    const foundWebsite = {
+    if (emailToolCalls.length === 0) return null;
+    
+    const lastToolCall = emailToolCalls[emailToolCalls.length - 1];
+    const foundEmail = {
       jsx: lastToolCall.output,
-      description: lastToolCall.type === "tool-editWebsite" ? 'Edited Website' : 'Generated Website'
+      description: lastToolCall.type === "tool-editEmail" ? 'Edited Email' : 'Generated Email'
     };
     
-    // Show viewport automatically when a website is created or edited
-    if (foundWebsite && !isViewportVisible) {
+    console.log('Latest email found:', foundEmail);
+    console.log('Email JSX length:', foundEmail.jsx?.length);
+    
+    // Show viewport automatically when an email is created or edited
+    if (foundEmail && !isViewportVisible) {
       setIsViewportVisible(true);
     }
     
-    return foundWebsite;
-  }, [websiteToolCalls, isViewportVisible]);
+    return foundEmail;
+  }, [emailToolCalls, isViewportVisible]);
 
-  if (!isViewportVisible || !latestWebsite) {
-    // When viewport is not visible or no website exists, show only the chat with full width
+  if (!isViewportVisible || !latestEmail) {
+    // When viewport is not visible or no email exists, show only the chat with full width
     return (
       <div className="w-screen h-screen">
         <div className="flex flex-col h-full">
           <div className="grid h-full grid-rows-[1fr_auto_auto] max-w-[800px] m-auto w-full">
-            <div className="flex flex-col-reverse gap-8 p-8 overflow-y-auto">
-              {messages.toReversed().map((m) => (
-                <div
-                  key={m.id}
-                  className={cn(
-                    m.role === "user" &&
-                      "bg-muted/50 rounded-md p-3 ml-auto max-w-[80%]"
-                  )}
-                >
-                  {m.parts.map((part, i) => {
-                    // Check if this is a tool call part (starts with "tool-")
-                    if (part.type.startsWith("tool-")) {
-                      const toolName = part.type.substring(5); // Remove "tool-" prefix
-                      return <ToolCallBadge key={`${m.id}-${i}`} toolName={toolName} part={part} />;
-                    }
+            <Conversation className="flex-1">
+              <ConversationContent className="space-y-4">
+                {messages.length === 0 ? (
+                  <ConversationEmptyState
+                    icon={<SparklesIcon className="size-8" />}
+                    title="Start Creating"
+                    description="Ask me to create a beautiful website or design for you"
+                  />
+                ) : (
+                  messages.map((m, messageIndex) => {
+                    const isLastMessage = messageIndex === messages.length - 1;
+                    const isAssistant = m.role === "assistant";
                     
-                    switch (part.type) {
-                      case "text":
+                    // Separate text and tool parts
+                    const textParts = m.parts.filter(p => p.type === "text");
+                    const toolParts = m.parts.filter(p => p.type.startsWith("tool-"));
+                    
+                    // Get the combined text for copying
+                    const messageText = textParts.map(p => p.type === "text" ? p.text : "").join("");
+
+                    return (
+                      <div key={m.id} className="space-y-2">
+                        {/* Render tool calls */}
+                        {toolParts.map((part, i) => {
+                          const toolPart = part as ToolUIPart;
                         return (
-                          <div key={`${m.id}-${i}`}>
-                            <MarkdownContent 
-                              id={`message-${m.id}-part-${i}`} 
-                              content={part.text} 
-                            />
-                          </div>
-                        );
-                      default:
+                            <Tool key={`${m.id}-tool-${i}`}>
+                              <ToolHeader
+                                type={toolPart.type}
+                                state={toolPart.state}
+                              />
+                              <ToolContent>
+                                <ToolInput input={toolPart.input} />
+                                <ToolOutput
+                                  output={toolPart.output}
+                                  errorText={toolPart.errorText}
+                                />
+                              </ToolContent>
+                            </Tool>
+                          );
+                        })}
+
+                        {/* Render text message */}
+                        {textParts.length > 0 && (
+                          <Message from={m.role}>
+                            <div className="flex flex-col gap-1">
+                              <MessageContent variant={isAssistant ? "flat" : "contained"}>
+                                {textParts.map((part, i) => {
+                                  if (part.type === "text") {
+                                    return isAssistant ? (
+                                      <Response key={`${m.id}-${i}`}>
+                                        {part.text}
+                                      </Response>
+                                    ) : (
+                                      <div key={`${m.id}-${i}`}>{part.text}</div>
+                                    );
+                                  }
                         return null;
-                    }
-                  })}
+                                })}
+                              </MessageContent>
+
+                              {/* Actions for assistant messages */}
+                              {isAssistant && isLastMessage && (
+                                <Actions className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Action
+                                    label="Regenerate"
+                                    tooltip="Regenerate response"
+                                    onClick={() => regenerate()}
+                                  >
+                                    <RefreshCcwIcon className="size-3" />
+                                  </Action>
+                                  <Action
+                                    label="Copy"
+                                    tooltip="Copy to clipboard"
+                                    onClick={() => copyToClipboard(messageText)}
+                                  >
+                                    <CopyIcon className="size-3" />
+                                  </Action>
+                                </Actions>
+                              )}
+                            </div>
+                          </Message>
+                        )}
                 </div>
-              ))}
+                    );
+                  })
+                )}
+
+                {/* Loading indicator */}
+                {(status === "streaming" || status === "submitted") && (
+                  <div className="flex items-center gap-2 text-muted-foreground py-4">
+                    <Loader size={16} />
+                    <span className="text-sm">Thinking...</span>
             </div>
+                )}
+              </ConversationContent>
+              <ConversationScrollButton />
+            </Conversation>
 
             {error && (
               <div className="px-8 pb-4">
@@ -331,10 +323,10 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
           </div>
         </div>
 
-        {/* Website Viewport - only show toggle button if website exists */}
-        {latestWebsite && (
-          <WebsiteViewport
-            jsx={latestWebsite.jsx}
+        {/* Email Viewport - only show toggle button if email exists */}
+        {latestEmail && (
+          <EmailViewport
+            jsx={latestEmail.jsx}
             onToggleVisibility={toggleViewportVisibility}
           />
         )}
@@ -355,39 +347,104 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
           className="flex flex-col"
         >
           <div className="grid h-full grid-rows-[1fr_auto_auto] max-w-[800px] m-auto w-full">
-            <div className="flex flex-col-reverse gap-8 p-8 overflow-y-auto">
-              {messages.toReversed().map((m) => (
-                <div
-                  key={m.id}
-                  className={cn(
-                    m.role === "user" &&
-                      "bg-muted/50 rounded-md p-3 ml-auto max-w-[80%]"
-                  )}
-                >
-                  {m.parts.map((part, i) => {
-                    // Check if this is a tool call part (starts with "tool-")
-                    if (part.type.startsWith("tool-")) {
-                      const toolName = part.type.substring(5); // Remove "tool-" prefix
-                      return <ToolCallBadge key={`${m.id}-${i}`} toolName={toolName} part={part} />;
-                    }
+            <Conversation className="flex-1">
+              <ConversationContent className="space-y-4">
+                {messages.length === 0 ? (
+                  <ConversationEmptyState
+                    icon={<SparklesIcon className="size-8" />}
+                    title="Start Creating"
+                    description="Ask me to create a beautiful website or design for you"
+                  />
+                ) : (
+                  messages.map((m, messageIndex) => {
+                    const isLastMessage = messageIndex === messages.length - 1;
+                    const isAssistant = m.role === "assistant";
                     
-                    switch (part.type) {
-                      case "text":
+                    // Separate text and tool parts
+                    const textParts = m.parts.filter(p => p.type === "text");
+                    const toolParts = m.parts.filter(p => p.type.startsWith("tool-"));
+                    
+                    // Get the combined text for copying
+                    const messageText = textParts.map(p => p.type === "text" ? p.text : "").join("");
+
+                    return (
+                      <div key={m.id} className="space-y-2">
+                        {/* Render tool calls */}
+                        {toolParts.map((part, i) => {
+                          const toolPart = part as ToolUIPart;
                         return (
-                          <div key={`${m.id}-${i}`}>
-                            <MarkdownContent 
-                              id={`message-${m.id}-part-${i}`} 
-                              content={part.text} 
-                            />
-                          </div>
-                        );
-                      default:
+                            <Tool key={`${m.id}-tool-${i}`}>
+                              <ToolHeader
+                                type={toolPart.type}
+                                state={toolPart.state}
+                              />
+                              <ToolContent>
+                                <ToolInput input={toolPart.input} />
+                                <ToolOutput
+                                  output={toolPart.output}
+                                  errorText={toolPart.errorText}
+                                />
+                              </ToolContent>
+                            </Tool>
+                          );
+                        })}
+
+                        {/* Render text message */}
+                        {textParts.length > 0 && (
+                          <Message from={m.role}>
+                            <div className="flex flex-col gap-1">
+                              <MessageContent variant={isAssistant ? "flat" : "contained"}>
+                                {textParts.map((part, i) => {
+                                  if (part.type === "text") {
+                                    return isAssistant ? (
+                                      <Response key={`${m.id}-${i}`}>
+                                        {part.text}
+                                      </Response>
+                                    ) : (
+                                      <div key={`${m.id}-${i}`}>{part.text}</div>
+                                    );
+                                  }
                         return null;
-                    }
-                  })}
+                                })}
+                              </MessageContent>
+
+                              {/* Actions for assistant messages */}
+                              {isAssistant && isLastMessage && (
+                                <Actions className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Action
+                                    label="Regenerate"
+                                    tooltip="Regenerate response"
+                                    onClick={() => regenerate()}
+                                  >
+                                    <RefreshCcwIcon className="size-3" />
+                                  </Action>
+                                  <Action
+                                    label="Copy"
+                                    tooltip="Copy to clipboard"
+                                    onClick={() => copyToClipboard(messageText)}
+                                  >
+                                    <CopyIcon className="size-3" />
+                                  </Action>
+                                </Actions>
+                              )}
+                            </div>
+                          </Message>
+                        )}
                 </div>
-              ))}
+                    );
+                  })
+                )}
+
+                {/* Loading indicator */}
+                {(status === "streaming" || status === "submitted") && (
+                  <div className="flex items-center gap-2 text-muted-foreground py-4">
+                    <Loader size={16} />
+                    <span className="text-sm">Thinking...</span>
             </div>
+                )}
+              </ConversationContent>
+              <ConversationScrollButton />
+            </Conversation>
 
             {error && (
               <div className="px-8 pb-4">
@@ -463,8 +520,8 @@ export function ChatWithViewport({ modelId = DEFAULT_MODEL }: { modelId: string 
           maxSize={100}
           className="flex flex-col"
         >
-          <WebsiteViewport
-            jsx={latestWebsite?.jsx}
+          <EmailViewport
+            jsx={latestEmail?.jsx}
             onToggleVisibility={toggleViewportVisibility}
           />
         </ResizablePanel>

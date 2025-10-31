@@ -1,6 +1,6 @@
-A powerful Next.js chatbot starter that leverages the new Vercel AI Gateway for provider-agnostic AI agent applications. This app serves as a comprehensive foundation for building agent chat applications that can seamlessly switch between any AI provider without code changes.
+A powerful Next.js AI email generator that leverages the Vercel AI Gateway and React Email to create beautiful, professional emails with natural language. This app serves as a comprehensive foundation for building AI-powered email generation applications that work seamlessly across any AI provider.
 
-**🚀 New Feature**: Now includes advanced **AI-powered website generation** - create complete, responsive websites with natural language descriptions and preview them in real-time!
+**🎨 AI-Powered Email Generation**: Create stunning, responsive emails using natural language descriptions - from welcome emails to promotional campaigns, all powered by React Email!
 
 ## AI Gateway Integration
 
@@ -12,12 +12,13 @@ This application demonstrates cutting-edge use of the [Vercel AI Gateway](https:
 - **Enterprise Security**: Secure credential management without exposing API keys in client code
 - **Caching & Optimization**: Automatic response caching and request optimization
 
-## Powerful Agent Chat Starter
+## Powerful AI Email Generator
 
-This starter template provides everything needed for production-ready agent chat applications:
+This starter template provides everything needed for production-ready AI email generation:
 
 - **Universal Provider Support**: One codebase, unlimited AI providers
-- **Tool Calling Framework**: Built-in function calling for external API integration
+- **React Email Integration**: Generate emails using industry-standard React Email components
+- **Tool Calling Framework**: Built-in function calling for web search and design inspiration
 - **Streaming Responses**: Real-time AI responses with type safety
 - **Session Management**: Persistent chat history and user context
 - **Production Ready**: Built-in security, monitoring, and scalability
@@ -27,11 +28,11 @@ This starter template provides everything needed for production-ready agent chat
 
 ### Super Easy to Start
 
-Get your AI chatbot running in **under 2 minutes** with zero configuration:
+Get your AI email generator running in **under 2 minutes** with zero configuration:
 
 1. **One-Click Deploy** - Click the button below to instantly deploy to Vercel
 2. **Zero Setup** - No API keys or configuration needed - AI Gateway handles everything
-3. **Start Chatting** - Your chatbot is live with provider-agnostic AI support
+3. **Start Creating** - Your email generator is live with provider-agnostic AI support
 
 ### One-time setup
 
@@ -43,11 +44,15 @@ Get your AI chatbot running in **under 2 minutes** with zero configuration:
 1. Link it to a Vercel project: `vc link` or `vc deploy`
 
 ### Usage
-1. Install packages with `pnpm i` (or `npm i` or `yarn i`) and run the development server with `vc dev`
-1. (Optional) For web search functionality, add your EXA API key to your environment variables:
+1. Install packages with `pnpm i` (or `npm i` or `yarn i`)
+2. **Authentication Setup** - Choose one option:
+   - **Option A (Recommended)**: Run `vercel env pull` to download OIDC tokens, then use `vercel dev` to start the development server
+   - **Option B**: Set `AI_GATEWAY_API_KEY` in your environment variables (get your key from [Vercel AI Gateway](https://vercel.com/dashboard/ai-gateway)), then use `pnpm dev`
+   - **Note**: On Vercel deployments, OIDC authentication is automatic - no API key needed
+3. (Optional) For web search functionality, add your EXA API key to your environment variables:
    - Get your API key from [Exa](https://exa.ai/)
    - Add `EXA_API_KEY=your_api_key_here` to your environment variables or `.env.local` file
-1. Open http://localhost:3000 to try the chatbot
+4. Open http://localhost:3000 to start generating emails!
 
 ### FAQ
 
@@ -59,57 +64,71 @@ Get your AI chatbot running in **under 2 minutes** with zero configuration:
    1. search for 'OIDC' in settings
    1. toggle the button under "Secure Backend Access with OIDC Federation" to Enabled and click the "Save" button
 
+## AI SDK v6 Beta & Agent Architecture
+
+This application showcases the new [AI SDK v6 beta](https://v6.ai-sdk.dev/docs/announcing-ai-sdk-6-beta) with the `ToolLoopAgent` class for building powerful AI agents with full control over execution flow, tool loops, and state management.
+
+## React Email Email Generation
+
+This application features a powerful email generation system that creates fully functional, responsive emails using natural language descriptions. The AI can generate complete emails with modern design patterns and best practices.
+
+### Email Generation Features
+
+- **Natural Language Input**: Simply describe the email you want (e.g., "Create a welcome email for new users")
+- **Complete Email Generation**: Generates full emails with proper structure (Html, Head, Body, Container, Sections)
+- **Cross-Client Compatibility**: Emails work perfectly in Gmail, Outlook, Apple Mail, Yahoo Mail, and more
+- **Professional Templates**: Built-in knowledge of welcome emails, promotional campaigns, transactional emails, newsletters, and more
+- **Visual Reference Support**: Can analyze screenshots of existing emails and recreate similar designs
+
+### Email Editing Capabilities
+
+- **Real-time Modifications**: Edit generated emails with simple instructions like "change the button color to blue" or "add a footer section"
+- **Content Updates**: Modify text, images, and layout elements
+- **Style Adjustments**: Change colors, fonts, spacing, and visual elements
+- **Section Management**: Add, remove, or rearrange email sections
+
+### Interactive Email Viewport
+
+- **Split-Screen Interface**: Chat with the AI on one side while previewing your email on the other
+- **Responsive Preview**: Toggle between desktop and mobile views to see how your email looks on different devices
+- **Code Inspection**: View the generated React Email JSX code to understand the implementation
+- **Live Updates**: See changes instantly as you make modifications through chat
+- **HTML Rendering**: Emails are rendered to HTML in real-time for accurate preview
+
+### Example Use Cases
+
+- Generate welcome emails for new users
+- Create promotional emails for sales and campaigns
+- Build transactional emails (receipts, confirmations, notifications)
+- Design newsletters and update emails
+- Create password reset and verification emails
+- Generate event invitations and announcements
+- Recreate existing email designs with custom content
+
+### React Email Components Used
+
+The generator uses React Email's component library for maximum compatibility:
+- `<Html>`, `<Head>`, `<Body>` - Email structure
+- `<Container>`, `<Section>`, `<Row>`, `<Column>` - Layout
+- `<Text>`, `<Heading>` - Typography
+- `<Button>`, `<Link>` - Interactive elements
+- `<Img>` - Images with proper email client support
+- `<Hr>` - Dividers
+- `<Preview>` - Email preview text
+
 ## Chat SDK and Tool Calling
 
 This application demonstrates the integration of the Vercel AI SDK to enable advanced chat functionalities, including tool calling within a chat UI. Tool calling allows the chatbot to interact with external APIs or custom functions based on user input, enhancing the conversational experience by providing dynamic and context-aware responses.
 
-The standout feature is the **AI website generator** that creates production-ready websites from simple descriptions. Users can generate complete landing pages, portfolios, and business sites with modern design patterns, then iterate on them through natural conversation. 
-
 ### Available Tools
 
-- **Website Generation**: Create complete, responsive websites with JSX and Tailwind CSS
-- **Website Editing**: Modify existing generated websites with natural language instructions
-- **Website Screenshot**: Capture screenshots of existing websites for design inspiration
+- **Email Generation**: Create complete, responsive emails with React Email components
+- **Email Editing**: Modify existing generated emails with natural language instructions
+- **Website Screenshot**: Capture screenshots of existing websites/emails for design inspiration
 - **Web Search**: Search the web for up-to-date information using Exa (requires `EXA_API_KEY`)
-- **Real-time Preview**: View generated websites with responsive design preview (desktop/mobile)
+- **Real-time Preview**: View generated emails with responsive design preview (desktop/mobile)
 
 The chat UI showcases how these capabilities can be seamlessly integrated into a user-friendly interface, allowing users to interact with AI-powered tools in real-time.
-
-## AI-Powered Website Generation
-
-This application features a powerful website generation system that creates fully functional, responsive websites using natural language descriptions. The AI can generate complete websites with modern design patterns and best practices.
-
-### Website Generation Features
-
-- **Natural Language Input**: Simply describe the website you want (e.g., "Create a landing page for a coffee shop")
-- **Complete Website Generation**: Generates full single-page websites with multiple sections (header, hero, features, testimonials, footer)
-- **Modern Styling**: Uses Tailwind CSS for beautiful, responsive designs with proper mobile/desktop breakpoints
-- **Interactive Elements**: Includes hover effects, transitions, call-to-action buttons, and engaging UX
-- **Professional Templates**: Built-in examples including SaaS landing pages, agency portfolios, product showcases, and tech startup sites
-- **Visual Reference Support**: Can analyze screenshots of existing websites and recreate similar designs with your content
-
-### Website Editing Capabilities
-
-- **Real-time Modifications**: Edit generated websites with simple instructions like "change the color scheme to green" or "add a testimonials section"
-- **Content Updates**: Modify text, images, and layout elements
-- **Style Adjustments**: Change colors, fonts, spacing, and visual elements
-- **Section Management**: Add, remove, or rearrange website sections
-
-### Interactive Website Viewport
-
-- **Split-Screen Interface**: Chat with the AI on one side while previewing your website on the other
-- **Responsive Preview**: Toggle between desktop and mobile views to see how your site looks on different devices
-- **Code Inspection**: View the generated JSX code to understand the implementation
-- **Live Updates**: See changes instantly as you make modifications through chat
-
-### Example Use Cases
-
-- Generate landing pages for businesses or products
-- Create portfolio websites for designers or developers  
-- Build marketing sites with conversion-focused design
-- Prototype website concepts rapidly
-- Learn modern web design patterns and Tailwind CSS usage
-- Recreate existing website designs with custom content
 
 ## Authors
 

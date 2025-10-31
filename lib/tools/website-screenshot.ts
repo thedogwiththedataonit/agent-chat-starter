@@ -87,6 +87,7 @@ export const websiteScreenshot = tool({
       
       return {
         success: true,
+        screenshotUrl: screenshotData.data.screenshot.url,
         screenshot: screenshotData.data.screenshot,
         metadata: {
           title: screenshotData.data.title,
