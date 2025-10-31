@@ -2,6 +2,7 @@ export const DEFAULT_MODEL = "moonshotai/kimi-k2";
 
 export const SUPPORTED_MODELS = [
   "google/gemini-2.5-pro",
+  "google/gemini-2.5-flash",
   "openai/gpt-4o-mini",
   "openai/gpt-4o",
   "openai/gpt-4.1-mini",
@@ -12,7 +13,7 @@ export const SUPPORTED_MODELS = [
   "openai/gpt-5",
   "anthropic/claude-3.5-sonnet",
   "anthropic/claude-3.7-sonnet",
-  'anthropic/claude-4.5-sonnet',
+  'anthropic/claude-sonnet-4.5',
   //"anthropic/claude-4-sonnet",
   //"xai/grok-4",
   "moonshotai/kimi-k2"

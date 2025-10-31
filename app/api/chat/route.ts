@@ -2,7 +2,7 @@ import { convertToModelMessages, type UIMessage } from "ai";
 import { DEFAULT_MODEL, SUPPORTED_MODELS } from "@/lib/constants";
 import { createEmailAgent } from "@/lib/agents/email-agent";
 
-export const maxDuration = 60;
+export const maxDuration = 300; // 5 minutes for complex email generation
 
 export async function POST(req: Request) {
   const {
