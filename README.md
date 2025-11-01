@@ -7,6 +7,7 @@ A powerful Next.js AI agent template that demonstrates advanced tool calling wit
 **🤖 Advanced AI Agent Architecture**: Built with AI SDK v6's `ToolLoopAgent` for multi-step reasoning and tool orchestration  
 **🎨 AI-Powered Email Generation**: Create stunning, responsive emails with React Email components  
 **🖼️ AI Image Generation**: Automatic custom image creation using nanobanana/fal.ai for email visuals  
+**📧 Email Sending**: Send generated emails directly via Resend with one click  
 **🔧 Multi-Tool System**: Web search, screenshot capture, email editing, and image transformation  
 **🌐 Provider Agnostic**: Works with any AI provider through Vercel AI Gateway  
 **📱 Live Preview**: Real-time email rendering with desktop/mobile views
@@ -70,6 +71,12 @@ This is an **educational template** showcasing production-ready patterns for bui
    # Required - Image Generation
    FAL_KEY=your_fal_api_key
    
+   # Required - Email Sending
+   RESEND_API_KEY=your_resend_api_key
+   
+   # Optional - Default "From" email domain
+   NEXT_PUBLIC_RESEND_SEND_DOMAIN=onboarding@resend.dev
+   
    # Optional - Web Search Tool
    EXA_API_KEY=your_exa_api_key
    ```
@@ -99,12 +106,14 @@ This is an **educational template** showcasing production-ready patterns for bui
 |----------|-------------|--------------|
 | `AI_GATEWAY_API_KEY` | Vercel AI Gateway API key | [Vercel Dashboard → AI Gateway](https://vercel.com/dashboard/ai-gateway) |
 | `FAL_KEY` | fal.ai API key for image generation | [fal.ai Dashboard](https://fal.ai/dashboard/keys) |
+| `RESEND_API_KEY` | Resend API key for email sending | [Resend Dashboard](https://resend.com/api-keys) |
 
 ### Optional Variables
 
 | Variable | Description | Where to Get |
 |----------|-------------|--------------|
 | `EXA_API_KEY` | Exa web search API key | [Exa Dashboard](https://exa.ai/) |
+| `NEXT_PUBLIC_RESEND_SEND_DOMAIN` | Default "From" email address | Use `onboarding@resend.dev` or your verified domain |
 
 ### Environment Setup Notes
 
@@ -131,7 +140,9 @@ This is an **educational template** showcasing production-ready patterns for bui
    
    In Vercel Dashboard → Project Settings → Environment Variables, add:
    - `FAL_KEY` - Your fal.ai API key
+   - `RESEND_API_KEY` - Your Resend API key
    - `EXA_API_KEY` - Your Exa API key (optional)
+   - `NEXT_PUBLIC_RESEND_SEND_DOMAIN` - Your verified domain (optional, defaults to onboarding@resend.dev)
    - `AI_GATEWAY_API_KEY` - Not needed on Vercel (uses OIDC automatically)
 
 4. **Deploy**
@@ -315,6 +326,26 @@ The agent is specifically prompted to prevent layout issues:
 - ✅ Word wrapping: `wordBreak: 'break-word'`
 - ✅ No fixed widths on buttons
 - ✅ Proper padding calculations
+
+### Email Sending
+
+Once an email is generated, you can send it directly using the **Send Email** button in the email preview:
+
+1. **Click "Send Email"** in the viewport header
+2. **Fill in the form**:
+   - From: Your verified email (use `onboarding@resend.dev` for testing)
+   - To: Recipient email(s) (comma-separated for multiple)
+   - Reply-To: Optional reply address
+   - Subject: Email subject line
+3. **Click Send** - Email is sent via Resend API
+
+**Features**:
+- ✅ Renders React Email to production-ready HTML
+- ✅ Works across all email clients (Gmail, Outlook, etc.)
+- ✅ Real-time success/error feedback
+- ✅ Supports multiple recipients
+- ✅ Validates email addresses
+- ✅ Helpful error messages for common issues
 
 ## 🖼️ AI Image Generation
 
@@ -531,6 +562,11 @@ export const DEFAULT_MODEL = "google:gemini-1.5-pro"
 - [fal.ai Documentation](https://fal.ai/docs)
 - [nanobanana Model](https://fal.ai/models/fal-ai/nano-banana)
 
+### Email Sending
+- [Resend Documentation](https://resend.com/docs)
+- [Resend API Reference](https://resend.com/docs/api-reference)
+- [Domain Verification](https://resend.com/docs/dashboard/domains/introduction)
+
 ## 🤝 Contributing
 
 Contributions are welcome! This is an educational template - help make it better:
@@ -557,6 +593,7 @@ This template builds on:
 - [Vercel AI SDK](https://sdk.vercel.ai) - The foundation for AI integration
 - [React Email](https://react.email) - Email component library
 - [fal.ai](https://fal.ai) - Fast AI image generation
+- [Resend](https://resend.com) - Email sending API
 - [Vercel](https://vercel.com) - Hosting and AI Gateway
 
 ---

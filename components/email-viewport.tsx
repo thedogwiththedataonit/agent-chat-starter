@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Monitor, Smartphone, Code, Eye, Mail } from "lucide-react";
 import { useState, memo, useEffect, useRef } from "react";
+import { SendEmailDialog } from "@/components/send-email-dialog";
 
 interface EmailViewportProps {
   jsx?: string;
@@ -164,15 +165,20 @@ export const EmailViewport = memo(function EmailViewport({
           </Button>
         </div>
         
-        {/* Close Viewport Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onToggleVisibility}
-          className="h-8 w-8 p-0"
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Send Email Button */}
+          <SendEmailDialog jsx={jsx} />
+          
+          {/* Close Viewport Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleVisibility}
+            className="h-8 w-8 p-0"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Viewport Content */}

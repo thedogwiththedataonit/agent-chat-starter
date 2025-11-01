@@ -12,10 +12,12 @@ export const SUPPORTED_MODELS = [
   "openai/gpt-o3",
   "openai/gpt-5-mini",
   "openai/gpt-5",
+  "openai/gpt-5-codex",
   "anthropic/claude-3.5-sonnet",
   "anthropic/claude-3.7-sonnet",
   'anthropic/claude-sonnet-4.5',
-  //"anthropic/claude-4-sonnet",
-  //"xai/grok-4",
+  "deepseek/deepseek-v3.2-exp",
+  "xai/grok-4",
+  "xai/grok-code-fast-1",
   "moonshotai/kimi-k2"
 ];

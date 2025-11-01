@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { generateImageServer } from "../nanobanana-server";
+import { uploadUrlToBlob } from "../blob";
 
 /**
  * Extract image URLs from React Email JSX
@@ -24,10 +25,11 @@ function extractImageUrls(jsx: string): Array<{ url: string; fullMatch: string; 
 }
 
 /**
- * Decode a proxied URL to get the original fal.media URL
+ * Decode a proxied URL to get the original URL
+ * Handles blob URLs, direct URLs, and proxied URLs
  */
 function decodeProxiedUrl(url: string): string {
-  // If it's already a direct URL, return it
+  // If it's already a direct URL (blob, http, https), return it
   if (url.startsWith('http')) {
     return url;
   }
@@ -43,10 +45,10 @@ function decodeProxiedUrl(url: string): string {
 
 /**
  * Tool for editing existing images using image-to-image generation
- * Transforms images via nanobanana and returns proxied URLs for email embedding
+ * Transforms images via nanobanana, uploads to blob storage, and returns blob URLs for email embedding
  */
 export const editImage = tool({
-  description: 'Edit or transform images within a React Email. Intelligently finds images in the email JSX, applies AI transformations, and returns updated JSX with new image URLs. Use this to modify existing email images (e.g., "make the hero image more vibrant", "change the product image to show a different angle").',
+  description: 'Edit or transform images within a React Email. Intelligently finds images in the email JSX, applies AI transformations, uploads to blob storage, and returns updated JSX with new blob storage URLs. Use this to modify existing email images (e.g., "make the hero image more vibrant", "change the product image to show a different angle").',
   inputSchema: z.object({
     prompt: z.string().min(1).describe('Description of how to modify the image (e.g., "make it more vibrant and add a blue gradient", "change to a warmer color palette", "add professional lighting")'),
     currentEmailJsx: z.string().min(1).describe('The complete React Email JSX code containing the image(s) to edit'),
@@ -95,19 +97,23 @@ export const editImage = tool({
           image2: secondImageUrl,
         });
         
-        // Create proxied URL
-        const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(result.url)}`;
-        
         console.log('[EditImage Tool] Generated new image:', result.url);
-        console.log('[EditImage Tool] Proxied URL:', proxyUrl);
         
-        // Replace the old URL with the new proxied URL in the JSX
-        updatedJsx = updatedJsx.replace(img.url, proxyUrl);
+        // Upload to Vercel Blob storage for permanent hosting
+        const timestamp = Date.now();
+        const fileName = `edited-image-${timestamp}.png`;
+        const blobUrl = await uploadUrlToBlob(result.url, fileName);
+        
+        console.log('[EditImage Tool] Uploaded to blob storage');
+        console.log('[EditImage Tool] Blob URL:', blobUrl);
+        
+        // Replace the old URL with the new blob URL in the JSX
+        updatedJsx = updatedJsx.replace(img.url, blobUrl);
         
         editedImages.push({
           original: img.url,
-          new: result.url,
-          proxied: proxyUrl,
+          new: blobUrl,
+          proxied: blobUrl,
         });
       }
       
