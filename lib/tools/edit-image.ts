@@ -25,8 +25,8 @@ function extractImageUrls(jsx: string): Array<{ url: string; fullMatch: string; 
 }
 
 /**
- * Decode a proxied URL to get the original URL
- * Handles blob URLs, direct URLs, and proxied URLs
+ * Ensure we have a valid image URL
+ * Handles blob URLs and direct URLs
  */
 function decodeProxiedUrl(url: string): string {
   // If it's already a direct URL (blob, http, https), return it
@@ -34,7 +34,7 @@ function decodeProxiedUrl(url: string): string {
     return url;
   }
   
-  // Extract from proxy URL: /api/proxy-image?url=...
+  // Legacy support: Extract from old proxy URL format if somehow present
   const match = url.match(/[?&]url=([^&]+)/);
   if (match) {
     return decodeURIComponent(match[1]);

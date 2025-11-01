@@ -8,7 +8,7 @@ import { formatEmailExamplesForPrompt } from "./email-examples";
 export const editEmail = tool({
   description: 'Edit or modify an existing email created with React Email. Can change colors, content, layout, add sections, insert generated image URLs, or make custom modifications. Use this to insert image URLs from createImage/editImage tools or to make non-image modifications.',
   inputSchema: z.object({
-    modification: z.string().min(1).describe('Description of what to modify (e.g., "change the button color to green", "add a footer section", "insert the hero image URL /api/proxy-image?url=...", "make the heading more prominent")'),
+    modification: z.string().min(1).describe('Description of what to modify (e.g., "change the button color to green", "add a footer section", "insert the hero image URL https://blob.vercel-storage.com/...", "make the heading more prominent")'),
     currentJsx: z.string().min(1).describe('The current React Email JSX code to modify'),
   }),
   execute: async ({ modification, currentJsx }) => {
@@ -50,7 +50,7 @@ WHEN MODIFYING:
 - Layout changes: Use React Email components properly
 - New sections: Match existing component patterns
 - Button changes: Maintain proper href and styling
-- Image insertions: Replace placeholder src values with provided proxied URLs
+- Image insertions: Replace placeholder src values with provided Vercel Blob storage URLs
 - Image updates: Update <Img> src attributes with new URLs while preserving other attributes
 
 EMAIL CLIENT SAFETY:

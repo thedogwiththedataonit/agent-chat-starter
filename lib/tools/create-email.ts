@@ -8,13 +8,13 @@ import { formatEmailExamplesForPrompt } from "./email-examples";
 export const createEmail = tool({
   description: 'Create a complete email using React Email components. This will generate a professional email with modern styling. Can include AI-generated image URLs that have been created using createImage tool.',
   inputSchema: z.object({
-    description: z.string().min(1).describe('Detailed description of the email to create. Include any generated image URLs that should be used (e.g., "welcome email for new users with hero image at /api/proxy-image?url=...", "promotional email with product image /api/proxy-image?url=...")'),
+    description: z.string().min(1).describe('Detailed description of the email to create. Include any generated image URLs that should be used (e.g., "welcome email for new users with hero image at https://blob.vercel-storage.com/...", "promotional email with product image https://blob.vercel-storage.com/...")'),
     referenceImageUrl: z.string().url().optional().describe('Optional URL of a screenshot to use as visual reference for the email design'),
   }),
   execute: async ({ description, referenceImageUrl }) => {
     try {
-      // Extract any image URLs mentioned in the description
-      const imageUrlPattern = /\/api\/proxy-image\?url=[^\s)]+/g;
+      // Extract any blob storage image URLs mentioned in the description
+      const imageUrlPattern = /https:\/\/[a-zA-Z0-9.-]+\.vercel-storage\.com\/[^\s)]+/g;
       const mentionedImages = description.match(imageUrlPattern) || [];
       
       // Create the content array for the LLM call
@@ -37,7 +37,7 @@ export const createEmail = tool({
         model: gateway(DEFAULT_MODEL),
         system: `You are an expert email developer specializing in React Email. You create beautiful, responsive emails that work perfectly across all email clients${referenceImageUrl ? ' based on the user\'s description and the provided reference screenshot image' : ''}.
 
-NOTE: When using images in emails, you can reference AI-generated images by their proxied URLs (e.g., /api/proxy-image?url=...) which are provided by the agent's image generation tools.
+NOTE: When using images in emails, you can reference AI-generated images by their Vercel Blob storage URLs (e.g., https://blob.vercel-storage.com/...) which are provided by the agent's image generation tools.
 
 REACT EMAIL COMPONENTS (from @react-email/components):
 You MUST use these exact component names from the React Email library:
@@ -76,7 +76,7 @@ IMPORTANT EMAIL DESIGN PRINCIPLES:
 - Use web-safe fonts: Arial, Helvetica, Georgia, Times New Roman, Verdana
 - Keep layouts simple and single-column when possible
 - Use tables for complex layouts (React Email handles this)
-- All images must have full URLs (no relative paths) - this includes proxied URLs like /api/proxy-image?url=...
+- All images must have full URLs (no relative paths) - this includes Vercel Blob storage URLs
 - Include alt text for all images for accessibility
 - Set explicit width attributes on images (typically 600 for full-width images)
 - Images MUST have style={{ maxWidth: '100%', height: 'auto', display: 'block' }} to prevent overflow

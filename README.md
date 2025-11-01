@@ -182,7 +182,6 @@ agent-template-ai-gateway/
 │   ├── api/
 │   │   ├── chat/route.ts           # Main chat endpoint
 │   │   ├── models/route.ts         # Available AI models
-│   │   ├── proxy-image/route.ts    # Image proxy for emails
 │   │   └── render-email/route.ts   # Email HTML rendering
 │   ├── layout.tsx                  # App layout
 │   └── page.tsx                    # Main chat UI
@@ -266,7 +265,7 @@ The agent generates **production-ready React Email code** that renders perfectly
 **Agent**:
 1. Analyzes need: "This needs a hero image showing a modern dashboard"
 2. Calls `createImage({ prompt: "modern SaaS dashboard...", aspectRatio: "16:9" })`
-3. Gets proxied URL: `/api/proxy-image?url=https://fal.media/...`
+3. Gets Vercel Blob URL: `https://blob.vercel-storage.com/...`
 4. Calls `createEmail({ description: "welcome email with hero image at [URL]..." })`
 5. Returns complete React Email JSX with embedded image
 
@@ -281,7 +280,7 @@ The agent generates **production-ready React Email code** that renders perfectly
     <Container maxWidth="600px" style={{ width: '100%', margin: '0 auto' }}>
       <Section style={{ padding: '20px', boxSizing: 'border-box' }}>
         <Img 
-          src="/api/proxy-image?url=..." 
+          src="https://blob.vercel-storage.com/..." 
           width={600} 
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }} 
           alt="Dashboard preview"
@@ -374,23 +373,25 @@ export const generateImageServer = async (params) => {
 }
 ```
 
-### Image Proxy for Email Compatibility
+### Image Storage with Vercel Blob
 
-Generated images are proxied through `/api/proxy-image` to ensure reliability:
+Generated images are uploaded to Vercel Blob storage for reliable, permanent hosting:
 
 ```typescript
-// Original fal.ai URL
-https://fal.media/files/tiger/abc123.png
+// Image generation flow:
+1. Generate image via nanobanana (fal.ai)
+2. Upload to Vercel Blob storage
+3. Return permanent blob URL
 
-// Proxied URL (used in emails)
-/api/proxy-image?url=https://fal.media/files/tiger/abc123.png
+// Example blob URL (used in emails)
+https://blob.vercel-storage.com/image-abc123.png
 ```
 
-**Why proxy?**
-- ✅ Security: Validates fal.media URLs only
-- ✅ Caching: `Cache-Control: public, max-age=31536000`
-- ✅ Reliability: Works consistently across email clients
-- ✅ Performance: Optimized delivery
+**Why Vercel Blob?**
+- ✅ Permanent: Images persist indefinitely
+- ✅ Fast: Global CDN distribution
+- ✅ Reliable: Works consistently across email clients
+- ✅ Secure: Private storage with public read access
 
 ### Image Tools
 
@@ -407,9 +408,9 @@ createImage({
 ```typescript
 {
   success: true,
-  imageUrl: "https://fal.media/...",
-  proxiedImageUrl: "/api/proxy-image?url=...",
-  aspectRatio: "16:9"
+  imageUrl: "https://blob.vercel-storage.com/...",
+  aspectRatio: "16:9",
+  message: "Image generated successfully and uploaded to Vercel Blob storage"
 }
 ```
 
