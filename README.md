@@ -1,6 +1,15 @@
-A powerful Next.js AI email generator that leverages the Vercel AI Gateway and React Email to create beautiful, professional emails with natural language. This app serves as a comprehensive foundation for building AI-powered email generation applications that work seamlessly across any AI provider.
+# AI Email Agent with Image Generation
 
-**🎨 AI-Powered Email Generation**: Create stunning, responsive emails using natural language descriptions - from welcome emails to promotional campaigns, all powered by React Email!
+A powerful Next.js AI agent template that demonstrates advanced tool calling with the Vercel AI SDK v6. This agent creates beautiful, professional emails with **AI-generated images** using React Email and natural language. Built as an open-source template for developers to learn from and extend.
+
+## ✨ Key Features
+
+**🤖 Advanced AI Agent Architecture**: Built with AI SDK v6's `ToolLoopAgent` for multi-step reasoning and tool orchestration  
+**🎨 AI-Powered Email Generation**: Create stunning, responsive emails with React Email components  
+**🖼️ AI Image Generation**: Automatic custom image creation using nanobanana/fal.ai for email visuals  
+**🔧 Multi-Tool System**: Web search, screenshot capture, email editing, and image transformation  
+**🌐 Provider Agnostic**: Works with any AI provider through Vercel AI Gateway  
+**📱 Live Preview**: Real-time email rendering with desktop/mobile views
 
 ## AI Gateway Integration
 
@@ -12,126 +21,544 @@ This application demonstrates cutting-edge use of the [Vercel AI Gateway](https:
 - **Enterprise Security**: Secure credential management without exposing API keys in client code
 - **Caching & Optimization**: Automatic response caching and request optimization
 
-## Powerful AI Email Generator
+## 🏗️ What This Template Teaches
 
-This starter template provides everything needed for production-ready AI email generation:
+This is an **educational template** showcasing production-ready patterns for building AI agents:
 
-- **Universal Provider Support**: One codebase, unlimited AI providers
-- **React Email Integration**: Generate emails using industry-standard React Email components
-- **Tool Calling Framework**: Built-in function calling for web search and design inspiration
-- **Streaming Responses**: Real-time AI responses with type safety
-- **Session Management**: Persistent chat history and user context
-- **Production Ready**: Built-in security, monitoring, and scalability
-- **Zero-config Deployment**: Deploy to Vercel with a single click
+- **Agent Architecture**: How to structure multi-tool agents with AI SDK v6
+- **Tool Calling**: Creating and orchestrating multiple AI tools
+- **Image Generation**: Integrating AI image models into agent workflows
+- **React Email**: Generating pixel-perfect emails programmatically
+- **Provider Abstraction**: Using AI Gateway for provider-agnostic development
+- **Type Safety**: Full TypeScript implementation with proper types
+- **Streaming**: Real-time AI responses with user feedback
+- **Production Patterns**: Error handling, logging, and best practices
 
-## Getting Started
+## 🚀 Quick Start
 
-### Super Easy to Start
+### Prerequisites
 
-Get your AI email generator running in **under 2 minutes** with zero configuration:
+- Node.js 18+ and pnpm (or npm/yarn)
+- A Vercel account (free tier works)
+- API keys (see Environment Variables below)
 
-1. **One-Click Deploy** - Click the button below to instantly deploy to Vercel
-2. **Zero Setup** - No API keys or configuration needed - AI Gateway handles everything
-3. **Start Creating** - Your email generator is live with provider-agnostic AI support
+### Installation
 
-### One-time setup
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd agent-template-ai-gateway
+   ```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fai-sdk-gateway-demo)
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
 
-1. Clone this repository with the Deploy button above
-1. Install the [Vercel CLI](https://vercel.com/docs/cli) if you don't already have it
-1. Clone the repository you created above: `git clone <repo-url>`
-1. Link it to a Vercel project: `vc link` or `vc deploy`
+3. **Set up environment variables**
+   
+   Create a `.env.local` file in the root directory:
+   
+   ```env
+   # Required - AI Gateway Authentication
+   # Option A: Use OIDC (recommended for Vercel)
+   # Run: vercel env pull
+   
+   # Option B: Use API Key (for local development)
+   AI_GATEWAY_API_KEY=your_gateway_api_key
+   
+   # Required - Image Generation
+   FAL_KEY=your_fal_api_key
+   
+   # Optional - Web Search Tool
+   EXA_API_KEY=your_exa_api_key
+   ```
 
-### Usage
-1. Install packages with `pnpm i` (or `npm i` or `yarn i`)
-2. **Authentication Setup** - Choose one option:
-   - **Option A (Recommended)**: Run `vercel env pull` to download OIDC tokens, then use `vercel dev` to start the development server
-   - **Option B**: Set `AI_GATEWAY_API_KEY` in your environment variables (get your key from [Vercel AI Gateway](https://vercel.com/dashboard/ai-gateway)), then use `pnpm dev`
-   - **Note**: On Vercel deployments, OIDC authentication is automatic - no API key needed
-3. (Optional) For web search functionality, add your EXA API key to your environment variables:
-   - Get your API key from [Exa](https://exa.ai/)
-   - Add `EXA_API_KEY=your_api_key_here` to your environment variables or `.env.local` file
-4. Open http://localhost:3000 to start generating emails!
+4. **Start the development server**
+   
+   **Option A** (Recommended - auto-refreshes OIDC tokens):
+   ```bash
+   vercel dev
+   ```
+   
+   **Option B** (Standard - requires manual token refresh):
+   ```bash
+   pnpm dev
+   ```
 
-### FAQ
+5. **Open in browser**
+   ```
+   http://localhost:3000
+   ```
 
-1. If you prefer running your local development server directly rather than using `vc dev`, you'll need to run `vc env pull` to fetch the project's OIDC authentication token locally
-   1. the token expires every 12h, so you'll need to re-run this command periodically.
-   1. if you use `vc dev` it will auto-refresh the token for you, so you don't need to fetch it manually
-1. If you're linking to an existing, older project, you may need to enable the OIDC token feature in your project settings.
-   1. visit the project settings page (rightmost tab in your project's dashboard)
-   1. search for 'OIDC' in settings
-   1. toggle the button under "Secure Backend Access with OIDC Federation" to Enabled and click the "Save" button
+## 🔑 Environment Variables
 
-## AI SDK v6 Beta & Agent Architecture
+### Required Variables
 
-This application showcases the new [AI SDK v6 beta](https://v6.ai-sdk.dev/docs/announcing-ai-sdk-6-beta) with the `ToolLoopAgent` class for building powerful AI agents with full control over execution flow, tool loops, and state management.
+| Variable | Description | Where to Get |
+|----------|-------------|--------------|
+| `AI_GATEWAY_API_KEY` | Vercel AI Gateway API key | [Vercel Dashboard → AI Gateway](https://vercel.com/dashboard/ai-gateway) |
+| `FAL_KEY` | fal.ai API key for image generation | [fal.ai Dashboard](https://fal.ai/dashboard/keys) |
 
-## React Email Email Generation
+### Optional Variables
 
-This application features a powerful email generation system that creates fully functional, responsive emails using natural language descriptions. The AI can generate complete emails with modern design patterns and best practices.
+| Variable | Description | Where to Get |
+|----------|-------------|--------------|
+| `EXA_API_KEY` | Exa web search API key | [Exa Dashboard](https://exa.ai/) |
 
-### Email Generation Features
+### Environment Setup Notes
 
-- **Natural Language Input**: Simply describe the email you want (e.g., "Create a welcome email for new users")
-- **Complete Email Generation**: Generates full emails with proper structure (Html, Head, Body, Container, Sections)
-- **Cross-Client Compatibility**: Emails work perfectly in Gmail, Outlook, Apple Mail, Yahoo Mail, and more
-- **Professional Templates**: Built-in knowledge of welcome emails, promotional campaigns, transactional emails, newsletters, and more
-- **Visual Reference Support**: Can analyze screenshots of existing emails and recreate similar designs
+- **Development with OIDC**: Run `vercel env pull` to download tokens (expires every 12 hours)
+- **Development with API Key**: Add `AI_GATEWAY_API_KEY` to `.env.local`
+- **Production**: OIDC authentication is automatic on Vercel deployments
+- **Older Projects**: Enable OIDC in Project Settings → Secure Backend Access with OIDC Federation
 
-### Email Editing Capabilities
+## 📦 Deployment
 
-- **Real-time Modifications**: Edit generated emails with simple instructions like "change the button color to blue" or "add a footer section"
-- **Content Updates**: Modify text, images, and layout elements
-- **Style Adjustments**: Change colors, fonts, spacing, and visual elements
-- **Section Management**: Add, remove, or rearrange email sections
+### Deploy to Vercel (Recommended)
 
-### Interactive Email Viewport
+1. **Push to GitHub**
+   ```bash
+   git push origin main
+   ```
 
-- **Split-Screen Interface**: Chat with the AI on one side while previewing your email on the other
-- **Responsive Preview**: Toggle between desktop and mobile views to see how your email looks on different devices
-- **Code Inspection**: View the generated React Email JSX code to understand the implementation
-- **Live Updates**: See changes instantly as you make modifications through chat
-- **HTML Rendering**: Emails are rendered to HTML in real-time for accurate preview
+2. **Import to Vercel**
+   - Go to [vercel.com/new](https://vercel.com/new)
+   - Import your repository
+   - Vercel will auto-detect Next.js settings
 
-### Example Use Cases
+3. **Add Environment Variables**
+   
+   In Vercel Dashboard → Project Settings → Environment Variables, add:
+   - `FAL_KEY` - Your fal.ai API key
+   - `EXA_API_KEY` - Your Exa API key (optional)
+   - `AI_GATEWAY_API_KEY` - Not needed on Vercel (uses OIDC automatically)
 
-- Generate welcome emails for new users
-- Create promotional emails for sales and campaigns
-- Build transactional emails (receipts, confirmations, notifications)
-- Design newsletters and update emails
-- Create password reset and verification emails
-- Generate event invitations and announcements
-- Recreate existing email designs with custom content
+4. **Deploy**
+   - Click "Deploy"
+   - Your agent will be live in ~2 minutes
 
-### React Email Components Used
+### Deploy to Other Platforms
 
-The generator uses React Email's component library for maximum compatibility:
-- `<Html>`, `<Head>`, `<Body>` - Email structure
-- `<Container>`, `<Section>`, `<Row>`, `<Column>` - Layout
-- `<Text>`, `<Heading>` - Typography
-- `<Button>`, `<Link>` - Interactive elements
-- `<Img>` - Images with proper email client support
-- `<Hr>` - Dividers
-- `<Preview>` - Email preview text
+This is a standard Next.js app and can be deployed to:
+- Vercel (recommended - OIDC auth built-in)
+- Netlify
+- AWS Amplify
+- Self-hosted with Node.js
 
-## Chat SDK and Tool Calling
+**Note**: Non-Vercel deployments require `AI_GATEWAY_API_KEY` in environment variables.
 
-This application demonstrates the integration of the Vercel AI SDK to enable advanced chat functionalities, including tool calling within a chat UI. Tool calling allows the chatbot to interact with external APIs or custom functions based on user input, enhancing the conversational experience by providing dynamic and context-aware responses.
+## 🏛️ Architecture Overview
+
+This template demonstrates a production-ready AI agent architecture using AI SDK v6's `ToolLoopAgent`.
+
+### Agent Flow
+
+```
+User Input → Email Agent → Multi-Step Process:
+                           ├─ Analyze image needs
+                           ├─ Generate images (createImage tool)
+                           ├─ Create email (createEmail tool)
+                           ├─ Edit/refine (editEmail tool)
+                           └─ Return final email
+```
+
+### Directory Structure
+
+```
+agent-template-ai-gateway/
+├── app/
+│   ├── api/
+│   │   ├── chat/route.ts           # Main chat endpoint
+│   │   ├── models/route.ts         # Available AI models
+│   │   ├── proxy-image/route.ts    # Image proxy for emails
+│   │   └── render-email/route.ts   # Email HTML rendering
+│   ├── layout.tsx                  # App layout
+│   └── page.tsx                    # Main chat UI
+├── components/
+│   ├── ai-elements/                # AI UI components
+│   ├── ui/                         # Base UI components
+│   ├── chat.tsx                    # Chat interface
+│   ├── email-viewport.tsx          # Email preview
+│   └── model-selector.tsx          # Model switching
+├── lib/
+│   ├── agents/
+│   │   └── email-agent.ts          # 🤖 Main agent definition
+│   ├── tools/
+│   │   ├── create-email.ts         # Email generation tool
+│   │   ├── edit-email.ts           # Email editing tool
+│   │   ├── create-image.ts         # 🖼️ Image generation tool
+│   │   ├── edit-image.ts           # 🖼️ Image editing tool
+│   │   ├── web-search.ts           # Web search tool
+│   │   └── website-screenshot.ts   # Screenshot tool
+│   ├── gateway.ts                  # AI Gateway configuration
+│   ├── nanobanana-server.ts        # 🖼️ Server-side image generation
+│   └── constants.ts                # App configuration
+└── package.json
+```
+
+## 🤖 Agent Architecture
+
+### The Email Agent (`lib/agents/email-agent.ts`)
+
+The core agent is built with `ToolLoopAgent` from AI SDK v6:
+
+```typescript
+import { ToolLoopAgent } from "ai";
+
+export function createEmailAgent(modelId: string) {
+  return new ToolLoopAgent({
+    model: gateway(modelId),
+    instructions: `[Detailed agent instructions]`,
+    tools: {
+      webSearch,           // Search the web
+      createEmail,         // Generate React Email JSX
+      editEmail,           // Modify existing emails
+      websiteScreenshot,   // Capture design references
+      createImage,         // Generate AI images
+      editImage,           // Transform images
+    },
+    stopWhen: stepCountIs(25),
+  });
+}
+```
+
+### Agent Workflow
+
+The agent follows a **structured multi-step process**:
+
+1. **Analysis**: Understands user request and identifies required images
+2. **Image Generation**: Creates custom images using `createImage` tool
+3. **Email Creation**: Generates React Email JSX with `createEmail` tool
+4. **Image Integration**: Inserts generated image URLs into email
+5. **Refinement**: Uses `editEmail` to polish the final result
+
+### Why This Architecture?
+
+- ✅ **Separation of Concerns**: Each tool has a single responsibility
+- ✅ **Composability**: Tools can be used independently or combined
+- ✅ **Testability**: Each tool can be tested in isolation
+- ✅ **Extensibility**: Easy to add new tools (e.g., send-email, analytics)
+- ✅ **Type Safety**: Full TypeScript support with Zod schemas
+- ✅ **Error Handling**: Graceful degradation when tools fail
+
+## 🎨 Email Generation System
+
+### How It Works
+
+The agent generates **production-ready React Email code** that renders perfectly across all email clients.
+
+#### Example Interaction
+
+**User**: "Create a welcome email for a SaaS product"
+
+**Agent**:
+1. Analyzes need: "This needs a hero image showing a modern dashboard"
+2. Calls `createImage({ prompt: "modern SaaS dashboard...", aspectRatio: "16:9" })`
+3. Gets proxied URL: `/api/proxy-image?url=https://fal.media/...`
+4. Calls `createEmail({ description: "welcome email with hero image at [URL]..." })`
+5. Returns complete React Email JSX with embedded image
+
+#### Generated Output
+
+```jsx
+<Html>
+  <Head>
+    <Preview>Welcome to our platform!</Preview>
+  </Head>
+  <Body style={{ backgroundColor: '#f6f9fc', fontFamily: 'Arial, sans-serif' }}>
+    <Container maxWidth="600px" style={{ width: '100%', margin: '0 auto' }}>
+      <Section style={{ padding: '20px', boxSizing: 'border-box' }}>
+        <Img 
+          src="/api/proxy-image?url=..." 
+          width={600} 
+          style={{ maxWidth: '100%', height: 'auto', display: 'block' }} 
+          alt="Dashboard preview"
+        />
+        <Heading style={{ fontSize: '24px', fontWeight: 'bold' }}>
+          Welcome to Our Platform
+        </Heading>
+        {/* ... more content ... */}
+      </Section>
+    </Container>
+  </Body>
+</Html>
+```
+
+### React Email Components
+
+All emails use these production-tested components:
+
+- **Structure**: `<Html>`, `<Head>`, `<Body>`, `<Preview>`
+- **Layout**: `<Container>`, `<Section>`, `<Row>`, `<Column>`
+- **Typography**: `<Text>`, `<Heading>`
+- **Interactive**: `<Button>`, `<Link>`
+- **Media**: `<Img>`, `<Hr>`
+
+### Email Client Compatibility
+
+✅ **Tested and works across**:
+- Gmail (Desktop & Mobile)
+- Outlook (Windows, Mac, Web)
+- Apple Mail (iOS & macOS)
+- Yahoo Mail
+- ProtonMail
+- Thunderbird
+
+### Overflow Prevention
+
+The agent is specifically prompted to prevent layout issues:
+
+- ✅ Max width: 600px (industry standard)
+- ✅ Responsive images: `maxWidth: '100%'`
+- ✅ Box model aware: `boxSizing: 'border-box'`
+- ✅ Word wrapping: `wordBreak: 'break-word'`
+- ✅ No fixed widths on buttons
+- ✅ Proper padding calculations
+
+## 🖼️ AI Image Generation
+
+### How Image Generation Works
+
+Images are generated server-side using **nanobanana** (fal.ai's fast image model):
+
+```typescript
+// lib/nanobanana-server.ts
+import { fal } from "@fal-ai/client"
+
+export const generateImageServer = async (params) => {
+  const result = await fal.subscribe("fal-ai/nano-banana", {
+    input: {
+      prompt: params.prompt,
+      aspect_ratio: params.aspectRatio,
+      num_images: 1,
+      output_format: "png"
+    }
+  })
+  
+  return {
+    url: result.data.images[0].url,
+    prompt: params.prompt
+  }
+}
+```
+
+### Image Proxy for Email Compatibility
+
+Generated images are proxied through `/api/proxy-image` to ensure reliability:
+
+```typescript
+// Original fal.ai URL
+https://fal.media/files/tiger/abc123.png
+
+// Proxied URL (used in emails)
+/api/proxy-image?url=https://fal.media/files/tiger/abc123.png
+```
+
+**Why proxy?**
+- ✅ Security: Validates fal.media URLs only
+- ✅ Caching: `Cache-Control: public, max-age=31536000`
+- ✅ Reliability: Works consistently across email clients
+- ✅ Performance: Optimized delivery
+
+### Image Tools
+
+#### 1. `createImage` - Text-to-Image
+
+```typescript
+createImage({
+  prompt: "modern tech startup office, professional lighting",
+  aspectRatio: "16:9"  // Options: "16:9", "3:2", "1:1", "4:3"
+})
+```
+
+**Returns**:
+```typescript
+{
+  success: true,
+  imageUrl: "https://fal.media/...",
+  proxiedImageUrl: "/api/proxy-image?url=...",
+  aspectRatio: "16:9"
+}
+```
+
+#### 2. `editImage` - Image-to-Image Transformation
+
+```typescript
+editImage({
+  prompt: "make it more vibrant, add warm lighting",
+  currentEmailJsx: "<Html>...</Html>",
+  imageSelector: "first"  // "first", "last", or "all"
+})
+```
+
+**Features**:
+- ✅ Automatically finds images in email JSX
+- ✅ Decodes proxy URLs to original fal.media URLs
+- ✅ Applies transformations
+- ✅ Returns updated JSX with new image URLs
+
+## 🔧 Tool Calling System
+
+All tools use **Zod schemas** for type-safe parameters:
+
+```typescript
+import { tool } from "ai"
+import { z } from "zod"
+
+export const createImage = tool({
+  description: 'Generate a new image from a text description...',
+  inputSchema: z.object({
+    prompt: z.string().min(1).describe('Detailed description...'),
+    aspectRatio: z.enum(["16:9", "3:2", "1:1", "4:3"]).optional()
+  }),
+  execute: async ({ prompt, aspectRatio }) => {
+    // Tool implementation
+  }
+})
+```
 
 ### Available Tools
 
-- **Email Generation**: Create complete, responsive emails with React Email components
-- **Email Editing**: Modify existing generated emails with natural language instructions
-- **Website Screenshot**: Capture screenshots of existing websites/emails for design inspiration
-- **Web Search**: Search the web for up-to-date information using Exa (requires `EXA_API_KEY`)
-- **Real-time Preview**: View generated emails with responsive design preview (desktop/mobile)
+| Tool | Purpose | Required Params |
+|------|---------|----------------|
+| `createEmail` | Generate React Email JSX | `description`, `referenceImageUrl?` |
+| `editEmail` | Modify existing email | `modification`, `currentJsx` |
+| `createImage` | Generate AI image | `prompt`, `aspectRatio?` |
+| `editImage` | Transform email images | `prompt`, `currentEmailJsx`, `imageSelector` |
+| `webSearch` | Search the web | `query` |
+| `websiteScreenshot` | Capture screenshots | `url` |
 
-The chat UI showcases how these capabilities can be seamlessly integrated into a user-friendly interface, allowing users to interact with AI-powered tools in real-time.
+### Tool Execution Flow
 
-## Authors
+```
+User Message
+    ↓
+Agent analyzes intent
+    ↓
+Agent selects tool(s)
+    ↓
+Tool executes
+    ↓
+Result returned to agent
+    ↓
+Agent uses result in next step
+    ↓
+Final response to user
+```
 
-This repository is maintained by the [Vercel](https://vercel.com) team and community contributors. 
+## 🛠️ Customization Guide
 
-Contributions are welcome! Feel free to open issues or submit pull requests to enhance functionality or fix bugs.
+### Adding a New Tool
+
+1. **Create tool file** in `lib/tools/`:
+
+```typescript
+// lib/tools/my-custom-tool.ts
+import { tool } from "ai"
+import { z } from "zod"
+
+export const myCustomTool = tool({
+  description: 'What this tool does and when to use it',
+  inputSchema: z.object({
+    param: z.string().describe('Description for the AI')
+  }),
+  execute: async ({ param }) => {
+    // Your logic here
+    return { success: true, data: result }
+  }
+})
+```
+
+2. **Register tool** in `lib/agents/email-agent.ts`:
+
+```typescript
+import { myCustomTool } from "@/lib/tools/my-custom-tool"
+
+export function createEmailAgent(modelId: string) {
+  return new ToolLoopAgent({
+    // ...
+    tools: {
+      webSearch,
+      createEmail,
+      editEmail,
+      myCustomTool,  // ← Add here
+    },
+  })
+}
+```
+
+3. **Update instructions** in the agent to tell it when to use your tool.
+
+### Changing AI Models
+
+Models are configured in `lib/constants.ts`:
+
+```typescript
+export const DEFAULT_MODEL = "openai:gpt-4o"
+
+// Switch to Claude:
+export const DEFAULT_MODEL = "anthropic:claude-3-5-sonnet-20241022"
+
+// Switch to Gemini:
+export const DEFAULT_MODEL = "google:gemini-1.5-pro"
+```
+
+### Customizing the UI
+
+- **Chat Interface**: `components/chat.tsx`
+- **Email Preview**: `components/email-viewport.tsx`
+- **AI Elements**: `components/ai-elements/`
+- **Styling**: `app/globals.css` (Tailwind CSS)
+
+## 📚 Learn More
+
+### AI SDK v6 Documentation
+- [AI SDK v6 Beta Announcement](https://v6.ai-sdk.dev/docs/announcing-ai-sdk-6-beta)
+- [ToolLoopAgent Guide](https://v6.ai-sdk.dev/docs/ai-sdk-core/tool-loop-agent)
+- [Tool Calling](https://v6.ai-sdk.dev/docs/ai-sdk-core/tools)
+
+### Vercel AI Gateway
+- [AI Gateway Documentation](https://vercel.com/docs/functions/ai-gateway)
+- [Gateway Dashboard](https://vercel.com/dashboard/ai-gateway)
+
+### React Email
+- [React Email Documentation](https://react.email/docs)
+- [Component Library](https://react.email/docs/components)
+- [Email Examples](https://react.email/examples)
+
+### Image Generation
+- [fal.ai Documentation](https://fal.ai/docs)
+- [nanobanana Model](https://fal.ai/models/fal-ai/nano-banana)
+
+## 🤝 Contributing
+
+Contributions are welcome! This is an educational template - help make it better:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+MIT License - feel free to use this template for your own projects!
+
+## 💬 Support
+
+- **Issues**: Open an issue for bugs or feature requests
+- **Discussions**: Share your implementations and ask questions
+- **Twitter**: Share what you built with this template!
+
+## 🙏 Acknowledgments
+
+This template builds on:
+- [Vercel AI SDK](https://sdk.vercel.ai) - The foundation for AI integration
+- [React Email](https://react.email) - Email component library
+- [fal.ai](https://fal.ai) - Fast AI image generation
+- [Vercel](https://vercel.com) - Hosting and AI Gateway
+
+---
+
+**Built with ❤️ as an open-source learning resource for the AI developer community.**

@@ -1,6 +1,7 @@
 export const DEFAULT_MODEL = "moonshotai/kimi-k2";
 
 export const SUPPORTED_MODELS = [
+  "vercel/v0-1.5-md",
   "google/gemini-2.5-pro",
   "google/gemini-2.5-flash",
   "openai/gpt-4o-mini",
